@@ -11,7 +11,15 @@ import vmReducer from './vm';
 import stageSizeReducer from './stage-size';
 import {ScratchPaintReducer} from 'scratch-paint';
 
+import {authentication} from '../user/_reducers/authentication.reducer';
+import {registration} from '../user/_reducers/registration.reducer';
+import {alert} from '../user/_reducers/alert.reducer';
+
 export default combineReducers({
+    authentication: authentication,
+    registration: registration,
+    alert: alert,
+
     colorPicker: colorPickerReducer,
     customProcedures: customProceduresReducer,
     intl: intlReducer,

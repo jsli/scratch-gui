@@ -2,13 +2,18 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import {createStore, applyMiddleware, compose} from 'redux';
 import throttle from 'redux-throttle';
+import thunkMiddleware from 'redux-thunk';
+import {createLogger} from 'redux-logger';
 
 import {intlInitialState, IntlProvider} from '../reducers/intl.js';
 import reducer from '../reducers/gui';
 
+const loggerMiddleware = createLogger();
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const enhancer = composeEnhancers(
     applyMiddleware(
+        thunkMiddleware,
+        loggerMiddleware,
         throttle(300, {leading: true, trailing: true})
     )
 );

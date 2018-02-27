@@ -19,6 +19,7 @@ import Box from '../box/box.jsx';
 import FeedbackForm from '../feedback-form/feedback-form.jsx';
 import MenuBar from '../menu-bar/menu-bar.jsx';
 import PreviewModal from '../../containers/preview-modal.jsx';
+import LoginModal from '../../user/login/login-modal-container.jsx';
 import WebGlModal from '../../containers/webgl-modal.jsx';
 
 import layout from '../../lib/layout-constants.js';
@@ -71,11 +72,13 @@ const GUIComponent = props => {
             className={styles.pageWrapper}
             {...componentProps}
         >
+
             {previewInfoVisible ? (
                 <PreviewModal />
             ) : null}
             {feedbackFormVisible ? (
-                <FeedbackForm />
+                <LoginModal />
+                // <FeedbackForm />
             ) : null}
             {isRendererSupported ? null : (
                 <WebGlModal />
