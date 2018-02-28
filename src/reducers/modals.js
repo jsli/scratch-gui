@@ -7,6 +7,7 @@ const MODAL_BACKDROP_LIBRARY = 'backdropLibrary';
 const MODAL_COSTUME_LIBRARY = 'costumeLibrary';
 const MODAL_EXTENSION_LIBRARY = 'extensionLibrary';
 const MODAL_FEEDBACK_FORM = 'feedbackForm';
+const MODAL_IMPORT_INFO = 'importInfo';
 const MODAL_PREVIEW_INFO = 'previewInfo';
 const MODAL_SOUND_LIBRARY = 'soundLibrary';
 const MODAL_SPRITE_LIBRARY = 'spriteLibrary';
@@ -23,6 +24,7 @@ const initialState = {
     [MODAL_LOGIN_FORM]: false,
     [MODAL_PREVIEW_INFO]: false,
     [MODAL_REGISTER_FORM]: false,
+    [MODAL_IMPORT_INFO]: false,
     [MODAL_SOUND_LIBRARY]: false,
     [MODAL_SPRITE_LIBRARY]: false,
     [MODAL_SOUND_RECORDER]: false
@@ -71,6 +73,14 @@ const openFeedbackForm = function () {
     analytics.pageview('/modals/feedback');
     return openModal(MODAL_FEEDBACK_FORM);
 };
+const openImportInfo = function () {
+    analytics.pageview('modals/import');
+    return openModal(MODAL_IMPORT_INFO);
+};
+const openPreviewInfo = function () {
+    analytics.pageview('/modals/preview');
+    return openModal(MODAL_PREVIEW_INFO);
+};
 const openSoundLibrary = function () {
     analytics.pageview('/libraries/sounds');
     return openModal(MODAL_SOUND_LIBRARY);
@@ -82,10 +92,6 @@ const openSpriteLibrary = function () {
 const openSoundRecorder = function () {
     analytics.pageview('/modals/microphone');
     return openModal(MODAL_SOUND_RECORDER);
-};
-const openPreviewInfo = function () {
-    analytics.pageview('/modals/preview');
-    return openModal(MODAL_PREVIEW_INFO);
 };
 const openLoginForm = function () {
     analytics.pageview('/modals/login');
@@ -106,6 +112,9 @@ const closeExtensionLibrary = function () {
 };
 const closeFeedbackForm = function () {
     return closeModal(MODAL_FEEDBACK_FORM);
+};
+const closeImportInfo = function () {
+    return closeModal(MODAL_IMPORT_INFO);
 };
 const closePreviewInfo = function () {
     return closeModal(MODAL_PREVIEW_INFO);
@@ -131,6 +140,7 @@ export {
     openCostumeLibrary,
     openExtensionLibrary,
     openFeedbackForm,
+    openImportInfo,
     openPreviewInfo,
     openLoginForm,
     openRegisterForm,
@@ -141,6 +151,7 @@ export {
     closeCostumeLibrary,
     closeExtensionLibrary,
     closeFeedbackForm,
+    closeImportInfo,
     closePreviewInfo,
     closeSpriteLibrary,
     closeSoundLibrary,
