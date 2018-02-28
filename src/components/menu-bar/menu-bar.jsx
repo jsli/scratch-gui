@@ -10,12 +10,11 @@ import LoadButton from '../../containers/load-button.jsx';
 import SaveButton from '../../containers/save-button.jsx';
 import LanguageSelector from '../../containers/language-selector.jsx';
 
-import {openFeedbackForm} from '../../reducers/modals';
-
 import styles from './menu-bar.css';
 
-import feedbackIcon from './icon--feedback.svg';
 import scratchLogo from './scratch-logo.svg';
+import {userActions} from '../../user/_actions';
+import {openLoginForm} from '../../reducers/modals';
 
 const MenuBar = props => (
     <Box
@@ -36,21 +35,30 @@ const MenuBar = props => (
             <LoadButton className={styles.menuItem} />
             <LanguageSelector className={styles.menuItem} />
         </div>
-        <div className={styles.feedbackButtonWrapper}>
+        <div
+            className={styles.logoutButtonWrapper}
+        >
             <Button
-                className={styles.feedbackButton}
-                onClick={props.onGiveFeedback}
+                className={classNames(styles.loginButton, {[styles.hide]: props.loggedIn})}
+                onClick={props.onLogin}
             >
-                <img
-                    className={styles.feedbackButtonIcon}
-                    draggable={false}
-                    src={feedbackIcon}
-                />
-                <span className={styles.feedbackText}>
+                <span className={styles.loginText}>
                     <FormattedMessage
-                        defaultMessage="Give Feedback"
-                        description="Label for feedback form modal button"
-                        id="gui.menuBar.giveFeedback"
+                        defaultMessage="Login"
+                        description="Label for login button"
+                        id="gui.menuBar.login"
+                    />
+                </span>
+            </Button>
+            <Button
+                className={classNames(styles.logoutButton, {[styles.hide]: !props.loggedIn})}
+                onClick={props.onLogout}
+            >
+                <span className={styles.logoutText}>
+                    <FormattedMessage
+                        defaultMessage="Logout"
+                        description="Label for logout button"
+                        id="gui.menuBar.logout"
                     />
                 </span>
             </Button>
@@ -59,14 +67,25 @@ const MenuBar = props => (
 );
 
 MenuBar.propTypes = {
-    onGiveFeedback: PropTypes.func.isRequired
+    loggedIn: PropTypes.bool,
+    onLogin: PropTypes.func.isRequired,
+    onLogout: PropTypes.func.isRequired
 };
 
-const mapStateToProps = () => ({});
+const mapStateToProps = state => {
+    const {loggedIn} = state.authentication;
+    return {
+        loggedIn: loggedIn,
+        display: 'flex'
+    };
+};
 
 const mapDispatchToProps = dispatch => ({
-    onGiveFeedback: () => {
-        dispatch(openFeedbackForm());
+    onLogout: () => {
+        dispatch(userActions.logout());
+    },
+    onLogin: () => {
+        dispatch(openLoginForm());
     }
 });
 

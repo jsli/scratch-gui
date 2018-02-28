@@ -77,12 +77,12 @@ const GUIComponent = props => {
                 <PreviewModal />
             ) : null}
             {feedbackFormVisible ? (
-                <LoginModal />
-                // <FeedbackForm />
+                <FeedbackForm />
             ) : null}
             {isRendererSupported ? null : (
                 <WebGlModal />
             )}
+            <LoginModal />
             <MenuBar />
             <Box className={styles.bodyWrapper}>
                 <Box className={styles.flexWrapper}>

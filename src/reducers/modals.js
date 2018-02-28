@@ -11,6 +11,8 @@ const MODAL_PREVIEW_INFO = 'previewInfo';
 const MODAL_SOUND_LIBRARY = 'soundLibrary';
 const MODAL_SPRITE_LIBRARY = 'spriteLibrary';
 const MODAL_SOUND_RECORDER = 'soundRecorder';
+const MODAL_LOGIN_FORM = 'loginForm';
+const MODAL_REGISTER_FORM = 'registerForm';
 
 
 const initialState = {
@@ -18,7 +20,9 @@ const initialState = {
     [MODAL_COSTUME_LIBRARY]: false,
     [MODAL_EXTENSION_LIBRARY]: false,
     [MODAL_FEEDBACK_FORM]: false,
-    [MODAL_PREVIEW_INFO]: true,
+    [MODAL_LOGIN_FORM]: false,
+    [MODAL_PREVIEW_INFO]: false,
+    [MODAL_REGISTER_FORM]: false,
     [MODAL_SOUND_LIBRARY]: false,
     [MODAL_SPRITE_LIBRARY]: false,
     [MODAL_SOUND_RECORDER]: false
@@ -83,6 +87,14 @@ const openPreviewInfo = function () {
     analytics.pageview('/modals/preview');
     return openModal(MODAL_PREVIEW_INFO);
 };
+const openLoginForm = function () {
+    analytics.pageview('/modals/login');
+    return openModal(MODAL_LOGIN_FORM);
+};
+const openRegisterForm = function () {
+    analytics.pageview('/modals/register');
+    return openModal(MODAL_REGISTER_FORM);
+};
 const closeBackdropLibrary = function () {
     return closeModal(MODAL_BACKDROP_LIBRARY);
 };
@@ -107,6 +119,12 @@ const closeSoundLibrary = function () {
 const closeSoundRecorder = function () {
     return closeModal(MODAL_SOUND_RECORDER);
 };
+const closeLoginForm = function () {
+    return closeModal(MODAL_LOGIN_FORM);
+};
+const closeRegisterForm = function () {
+    return closeModal(MODAL_REGISTER_FORM);
+};
 export {
     reducer as default,
     openBackdropLibrary,
@@ -114,6 +132,8 @@ export {
     openExtensionLibrary,
     openFeedbackForm,
     openPreviewInfo,
+    openLoginForm,
+    openRegisterForm,
     openSoundLibrary,
     openSpriteLibrary,
     openSoundRecorder,
@@ -124,5 +144,7 @@ export {
     closePreviewInfo,
     closeSpriteLibrary,
     closeSoundLibrary,
+    closeLoginForm,
+    closeRegisterForm,
     closeSoundRecorder
 };

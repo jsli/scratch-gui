@@ -1,6 +1,7 @@
 import {userConstants} from '../_constants';
 import {userService} from '../_services';
 import {alertActions} from './';
+import {closeLoginForm} from '../../reducers/modals';
 
 function login(username, password) {
     return dispatch => {
@@ -10,7 +11,7 @@ function login(username, password) {
             .then(
                 user => {
                     dispatch(success(user));
-                    dispatch(alertActions.success('login'));
+                    dispatch(closeLoginForm());
                 },
                 error => {
                     dispatch(failure(error));

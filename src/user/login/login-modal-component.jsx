@@ -7,8 +7,8 @@ import styles from './login-modal-component.css';
 
 const LoginModal = props => (
     <ReactModal
-        isOpen
         className={styles.modalContent}
+        isOpen={props.isOpen}
         overlayClassName={styles.modalOverlay}
     >
         <Box className={styles.body}>
@@ -73,6 +73,7 @@ const LoginModal = props => (
 );
 
 LoginModal.propTypes = {
+    isOpen: PropTypes.bool,
     loggingIn: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,

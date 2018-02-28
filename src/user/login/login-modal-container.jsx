@@ -11,9 +11,6 @@ class LoginModal extends React.Component {
     constructor (props) {
         super(props);
 
-        // reset login status
-        this.props.dispatch(userActions.logout());
-
         this.state = {
             username: '',
             password: '',
@@ -38,16 +35,19 @@ class LoginModal extends React.Component {
         const {username, password} = this.state;
         const {dispatch} = this.props;
         if (username && password) {
+            // reset login status
+            dispatch(userActions.logout());
             dispatch(userActions.login(username, password));
         }
     }
 
     render () {
-        const {loggingIn} = this.props;
+        const {loggingIn, isOpen} = this.props;
         const {username, password, submitted} = this.state;
 
         return (
             <LoginModalComponent
+                isOpen={isOpen}
                 loggingIn={loggingIn}
                 password={password}
                 submitted={submitted}
@@ -60,13 +60,15 @@ class LoginModal extends React.Component {
 }
 
 LoginModal.propTypes = {
+    isOpen: PropTypes.bool,
     loggingIn: PropTypes.bool
 };
 
 const mapStateToProps = state => {
     const {loggingIn} = state.authentication;
     return {
-        loggingIn
+        loggingIn,
+        isOpen: state.modals.loginForm
     };
 };
 

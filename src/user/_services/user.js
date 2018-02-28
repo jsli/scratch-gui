@@ -1,7 +1,8 @@
-import api from '../../api/apis.js'
+import api from '../../api/apis.js';
+import {cleanAuth, getAuth, getLoginAuth, saveAuth} from '../../api/auth';
 
 function login(username, password) {
-    const auth = new Buffer(`${username}:${password}`).toString('base64');
+    const auth = getLoginAuth(username, password);
     const requestOptions = {
         method: 'POST',
         headers: {
@@ -9,6 +10,7 @@ function login(username, password) {
             'Authorization': `Basic ${auth}`
         }
     };
+    console.log(requestOptions);
 
     return fetch(api.login, requestOptions)
         .then(response => {
@@ -22,7 +24,7 @@ function login(username, password) {
             // login successful if there's a jwt token in the response
             if (user && user.data && user.data.token) {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
-                localStorage.setItem('user', JSON.stringify(user.data));
+                saveAuth(user.data);
             }
 
             return user;
@@ -32,8 +34,7 @@ function login(username, password) {
 }
 
 function logout() {
-    // remove user from local storage to log user out
-    localStorage.removeItem('user');
+    cleanAuth();
 }
 
 function register(user) {
