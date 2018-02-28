@@ -10,6 +10,7 @@ const LoginModal = props => (
         className={styles.modalContent}
         isOpen={props.isOpen}
         overlayClassName={styles.modalOverlay}
+        onRequestClose={props.onClose}
     >
         <Box className={styles.body}>
             <div className="col-md-6 col-md-offset-3">
@@ -76,6 +77,7 @@ LoginModal.propTypes = {
     isOpen: PropTypes.bool,
     loggingIn: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     password: PropTypes.string,
     submitted: PropTypes.bool,

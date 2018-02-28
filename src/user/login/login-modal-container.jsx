@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import bindAll from 'lodash.bindall';
 
 import LoginModalComponent from './login-modal-component.jsx';
+import {closeLoginForm} from '../../reducers/modals';
 
 class LoginModal extends React.Component {
     constructor (props) {
@@ -53,6 +54,7 @@ class LoginModal extends React.Component {
                 submitted={submitted}
                 username={username}
                 onChange={this.handleChange}
+                onClose={this.props.onClose}
                 onSubmit={this.handleSubmit}
             />
         );
@@ -61,7 +63,8 @@ class LoginModal extends React.Component {
 
 LoginModal.propTypes = {
     isOpen: PropTypes.bool,
-    loggingIn: PropTypes.bool
+    loggingIn: PropTypes.bool,
+    onClose: PropTypes.func
 };
 
 const mapStateToProps = state => {
@@ -72,6 +75,13 @@ const mapStateToProps = state => {
     };
 };
 
+const mapDispatchToProps = dispatch => ({
+    onClose: () => {
+        dispatch(closeLoginForm());
+    }
+});
+
 export default connect(
-    mapStateToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(LoginModal);
