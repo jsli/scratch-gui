@@ -1,6 +1,7 @@
 import {userConstants} from '../constants';
 import {userService} from './user_service_async';
 import {closeLoginForm, closeRegisterForm} from '../../reducers/modals';
+import {saveAuth} from '../../api/auth';
 
 const login = (username, password) => {
     const request = user => ({
@@ -12,7 +13,7 @@ const login = (username, password) => {
         user
     });
     const failure = error => ({
-        type: userConstants.LOGIN_SUCCESS,
+        type: userConstants.LOGIN_FAILURE,
         error
     });
 
@@ -21,14 +22,24 @@ const login = (username, password) => {
 
         userService.login(username, password)
             .then(
-                user => {
-                    dispatch(success(user));
-                    dispatch(closeLoginForm());
-                },
-                error => {
-                    dispatch(failure(error));
-                    // TODO: 回显错误
-                    // dispatch(alertActions.error(error));
+                data => {
+                    const user = data.data;
+                    // login successful if there's a jwt token in the response
+                    // store user details and jwt token in local storage to keep user logged in between page refreshes
+                    if (user && user.access_token) {
+                        saveAuth(user);
+                        dispatch(success(user));
+                        dispatch(closeLoginForm());
+                    }
+                }
+            )
+            .catch(
+                errorResponse => {
+                    errorResponse.json().then(
+                        error => {
+                            dispatch(failure(error.message));
+                        }
+                    );
                 }
             );
     };
@@ -60,7 +71,6 @@ const register = user => {
                 error => {
                     dispatch(failure(error));
                     // TODO: 回显错误
-                    // dispatch(alertActions.error(error));
                 }
             );
     };
