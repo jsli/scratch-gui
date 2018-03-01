@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import {userActions} from '../_actions';
+import {userActions} from '../actions';
 import PropTypes from 'prop-types';
 import bindAll from 'lodash.bindall';
 

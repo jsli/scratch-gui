@@ -13,7 +13,7 @@ import LanguageSelector from '../../containers/language-selector.jsx';
 import styles from './menu-bar.css';
 
 import scratchLogo from './scratch-logo.svg';
-import {userActions} from '../../user/_actions';
+import {userActions} from '../../user/actions';
 import {openLoginForm} from '../../reducers/modals';
 
 const MenuBar = props => (

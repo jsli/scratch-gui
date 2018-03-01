@@ -22,7 +22,7 @@ const initialState = {
     [MODAL_EXTENSION_LIBRARY]: false,
     [MODAL_FEEDBACK_FORM]: false,
     [MODAL_LOGIN_FORM]: false,
-    [MODAL_PREVIEW_INFO]: true,
+    [MODAL_PREVIEW_INFO]: false,
     [MODAL_REGISTER_FORM]: false,
     [MODAL_IMPORT_INFO]: false,
     [MODAL_SOUND_LIBRARY]: false,
