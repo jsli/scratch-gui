@@ -55,7 +55,7 @@ const RegisterModal = props => (
                         <label htmlFor="password">Password Copy</label>
                         <input
                             className="form-control"
-                            name="password"
+                            name="passwordCopy"
                             type="password"
                             value={props.passwordCopy}
                             onChange={props.onChange}

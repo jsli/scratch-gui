@@ -3,6 +3,11 @@ import {userService} from './user_service_async';
 import {closeLoginForm, closeRegisterForm} from '../../reducers/modals';
 import {saveAuth} from '../../api/auth';
 
+const loginSuccess = user => ({
+    type: userConstants.LOGIN_SUCCESS,
+    user
+});
+
 const login = (username, password) => {
     const request = user => ({
         type: userConstants.LOGIN_REQUEST,
@@ -64,13 +69,26 @@ const register = user => {
 
         userService.register(user)
             .then(
-                _user => {
-                    dispatch(success(_user));
-                    dispatch(closeRegisterForm());
-                },
-                error => {
-                    dispatch(failure(error));
-                    // TODO: 回显错误
+                data => {
+                    console.log('432432432 ', data);
+                    const _user = data.data;
+                    // login successful if there's a jwt token in the response
+                    // store user details and jwt token in local storage to keep user logged in between page refreshes
+                    if (_user && _user.access_token) {
+                        saveAuth(_user);
+                        dispatch(success(_user));
+                        dispatch(loginSuccess(_user));
+                        dispatch(closeRegisterForm());
+                    }
+                }
+            )
+            .catch(
+                errorResponse => {
+                    errorResponse.json().then(
+                        error => {
+                            dispatch(failure(error.message));
+                        }
+                    );
                 }
             );
     };

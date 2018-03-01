@@ -39,7 +39,11 @@ class RegisterModal extends React.Component {
         if (username && password && passwordCopy) {
             // reset Register status
             dispatch(userActions.logout());
-            dispatch(userActions.register(username, password, passwordCopy));
+            dispatch(userActions.register({
+                mobile: username,
+                password: password,
+                password_copy: passwordCopy
+            }));
         }
     }
 

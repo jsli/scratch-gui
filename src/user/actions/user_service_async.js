@@ -26,30 +26,7 @@ const register = registerInfo => {
     };
 
     return fetch(api.register, requestOptions)
-        .then(
-            response => {
-                if (!response.ok) {
-                    return Promise.reject(response.statusText);
-                }
-
-                return response.json();
-            }
-        )
-        .then(
-            data => {
-                const user = data.data;
-                // login successful if there's a jwt token in the response
-                if (user && user.access_token) {
-                    // store user details and jwt token in local storage to keep user logged in between page refreshes
-                    saveAuth(user);
-                }
-
-                return user;
-            },
-            error => {
-                Promise.reject(error);
-            }
-        );
+        .then(checkResponse);
 };
 
 const logout = () => {
