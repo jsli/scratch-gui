@@ -6,7 +6,7 @@ const getApi = api => {
 
 export default {
     // 用户相关
-    login: getApi('/staff/login'),
+    login: getApi('/user/login'),
     logout: getApi('/user/logout'),
     register: getApi('/user/register')
 };

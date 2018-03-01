@@ -78,7 +78,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     onClose: () => {
         dispatch(closeLoginForm());
-    }
+    },
+    dispatch
 });
 
 export default connect(
