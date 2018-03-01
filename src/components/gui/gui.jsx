@@ -20,6 +20,7 @@ import FeedbackForm from '../feedback-form/feedback-form.jsx';
 import MenuBar from '../menu-bar/menu-bar.jsx';
 import PreviewModal from '../../containers/preview-modal.jsx';
 import LoginModal from '../../user/login/login-modal-container.jsx';
+import RegisterModal from '../../user/register/register-modal-container.jsx';
 import ImportModal from '../../containers/import-modal.jsx';
 import WebGlModal from '../../containers/webgl-modal.jsx';
 
@@ -90,6 +91,7 @@ const GUIComponent = props => {
                 <WebGlModal />
             )}
             <LoginModal />
+            <RegisterModal />
             <MenuBar />
             {/*<Box className={styles.bodyWrapper}>*/}
                 {/*<Box className={styles.flexWrapper}>*/}

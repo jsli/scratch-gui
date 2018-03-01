@@ -5,16 +5,17 @@ import {userActions} from '../actions';
 import PropTypes from 'prop-types';
 import bindAll from 'lodash.bindall';
 
-import LoginModalComponent from './login-modal-component.jsx';
-import {closeLoginForm, openRegisterForm} from '../../reducers/modals';
+import RegisterModalComponent from './register-modal-component.jsx';
+import {closeRegisterForm, openLoginForm} from '../../reducers/modals';
 
-class LoginModal extends React.Component {
+class RegisterModal extends React.Component {
     constructor (props) {
         super(props);
 
         this.state = {
             username: '',
             password: '',
+            passwordCopy: '',
             submitted: false
         };
 
@@ -33,57 +34,58 @@ class LoginModal extends React.Component {
         e.preventDefault();
 
         this.setState({submitted: true});
-        const {username, password} = this.state;
+        const {username, password, passwordCopy} = this.state;
         const {dispatch} = this.props;
-        if (username && password) {
-            // reset login status
+        if (username && password && passwordCopy) {
+            // reset Register status
             dispatch(userActions.logout());
-            dispatch(userActions.login(username, password));
+            dispatch(userActions.register(username, password, passwordCopy));
         }
     }
 
     render () {
-        const {loggingIn, isOpen} = this.props;
-        const {username, password, submitted} = this.state;
+        const {registering, isOpen} = this.props;
+        const {username, password, passwordCopy, submitted} = this.state;
 
         return (
-            <LoginModalComponent
+            <RegisterModalComponent
                 isOpen={isOpen}
-                loggingIn={loggingIn}
                 password={password}
+                passwordCopy={passwordCopy}
+                registering={registering}
                 submitted={submitted}
                 username={username}
                 onChange={this.handleChange}
                 onClose={this.props.onClose}
-                onRegisterClick={this.props.onRegisterClick}
+                onLoginClick={this.props.onLoginClick}
                 onSubmit={this.handleSubmit}
             />
         );
     }
 }
 
-LoginModal.propTypes = {
+RegisterModal.propTypes = {
     isOpen: PropTypes.bool,
-    loggingIn: PropTypes.bool,
     onClose: PropTypes.func,
-    onRegisterClick: PropTypes.func
+    onLoginClick: PropTypes.func,
+    registering: PropTypes.bool
 };
 
 const mapStateToProps = state => {
-    const {loggingIn} = state.authentication;
+    const {registering} = state.authentication;
     return {
-        loggingIn,
-        isOpen: state.modals.loginForm
+        registering,
+        isOpen: state.modals.registerForm
     };
 };
 
 const mapDispatchToProps = dispatch => ({
     onClose: () => {
-        dispatch(closeLoginForm());
+        dispatch(closeRegisterForm());
     },
-    onRegisterClick: () => {
-        dispatch(closeLoginForm());
-        return dispatch(openRegisterForm());
+    onLoginClick: () => {
+        dispatch(closeRegisterForm());
+        return dispatch(openLoginForm());
     },
     dispatch
 });
@@ -91,4 +93,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(LoginModal);
+)(RegisterModal);
