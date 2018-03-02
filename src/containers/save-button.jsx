@@ -5,6 +5,9 @@ import {connect} from 'react-redux';
 
 import ButtonComponent from '../components/button/button.jsx';
 import {ComingSoonTooltip} from '../components/coming-soon/coming-soon.jsx';
+import {checkResponse} from '../api/gateway';
+import {authHeader} from '../api/auth';
+import api from '../api/apis';
 
 
 class SaveButton extends React.Component {
@@ -15,24 +18,63 @@ class SaveButton extends React.Component {
         ]);
     }
     handleClick () {
-        const json = this.props.saveProjectSb3();
+        // const json = this.props.saveProjectSb3();
+        const json = 'abfweelkfjelwjfew';
 
-        // Download project data into a file - create link element,
-        // simulate click on it, and then remove it.
-        const saveLink = document.createElement('a');
-        document.body.appendChild(saveLink);
+        const auth = authHeader();
+        console.error(auth)
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${auth}`
+            },
+            body: JSON.stringify({
+                source_code: json
+            })
+        };
 
-        const data = new Blob([json], {type: 'text'});
-        const url = window.URL.createObjectURL(data);
-        saveLink.href = url;
-
-        // File name: project-DATE-TIME
-        const date = new Date();
-        const timestamp = `${date.toLocaleDateString()}-${date.toLocaleTimeString()}`;
-        saveLink.download = `project-${timestamp}.json`;
-        saveLink.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(saveLink);
+        return fetch(api.project, requestOptions)
+            .then(checkResponse)
+            .then(
+                data => {
+                    console.warn(data);
+                    // const user = data.data;
+                    // // login successful if there's a jwt token in the response
+                    // // store user details and jwt token in local storage to keep user logged in between page refreshes
+                    // if (user && user.access_token) {
+                    //     saveAuth(user);
+                    //     dispatch(success(user));
+                    //     dispatch(closeLoginForm());
+                    // }
+                }
+            )
+            .catch(
+                errorResponse => {
+                    errorResponse.json().then(
+                        error => {
+                            console.error(error);
+                        }
+                    );
+                }
+            );
+        //
+        // // Download project data into a file - create link element,
+        // // simulate click on it, and then remove it.
+        // const saveLink = document.createElement('a');
+        // document.body.appendChild(saveLink);
+        //
+        // const data = new Blob([json], {type: 'text'});
+        // const url = window.URL.createObjectURL(data);
+        // saveLink.href = url;
+        //
+        // // File name: project-DATE-TIME
+        // const date = new Date();
+        // const timestamp = `${date.toLocaleDateString()}-${date.toLocaleTimeString()}`;
+        // saveLink.download = `project-${timestamp}.json`;
+        // saveLink.click();
+        // window.URL.revokeObjectURL(url);
+        // document.body.removeChild(saveLink);
     }
     render () {
         const {
@@ -45,7 +87,6 @@ class SaveButton extends React.Component {
                 tooltipId="save-button"
             >
                 <ButtonComponent
-                    disabled
                     onClick={this.handleClick}
                     {...props}
                 >

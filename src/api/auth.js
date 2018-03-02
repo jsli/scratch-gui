@@ -28,14 +28,17 @@ const cleanAuth = () => {
 
 const authHeader = () => {
     const user = getAuth();
+    console.log('user = ', user);
+    console.log('access_token = ', user.access_token);
     if (user && user.access_token) {
-        const auth = new Buffer(user.access_token).toString('base64');
-        if (user.token_expires_at && (user.token_expires_at > new Date())) {
-            return auth;
-        } else {
-            cleanAuth();
-            return '';
-        }
+        const auth = new Buffer(`${user.access_token}:`).toString('base64');
+        console.warn('auth - ', auth)
+        // if (user.token_expires_at && (user.token_expires_at > new Date())) {
+        //     return auth;
+        // } else {
+        //     cleanAuth();
+        //     return '';
+        // }
         return auth;
     }
 
@@ -44,6 +47,6 @@ const authHeader = () => {
 
 const _user = getAuth();
 const authInitialState = _user ?
-    {loggingIn: false, loggedIn: true, codingBusUser: _user} : {loggingIn: false, loggedIn: false};
+    {loggingIn: false, loggedIn: true, codingBusUser: _user} : {loggingIn: false, loggedIn: false, codingBusUser: {}};
 
 export {authHeader, saveAuth, cleanAuth, getAuth, getLoginAuth, authInitialState};

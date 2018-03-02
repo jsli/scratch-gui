@@ -3,7 +3,7 @@ import {getAuth} from '../../api/auth';
 
 const codingBusAuth = getAuth();
 const initialState = codingBusAuth ?
-    {loggingIn: false, loggedIn: true, codingBusAuth} : {loggingIn: false, loggedIn: false};
+    {loggingIn: false, loggedIn: true, codingBusAuth} : {loggingIn: false, loggedIn: false, codingBusAuth: {}};
 
 
 const authentication = (state = initialState, action) => {
@@ -23,12 +23,14 @@ const authentication = (state = initialState, action) => {
     case userConstants.LOGIN_FAILURE:
         return {
             loggingIn: false,
-            loggedIn: false
+            loggedIn: false,
+            codingBusAuth: {}
         };
     case userConstants.LOGOUT:
         return {
             loggingIn: false,
-            loggedIn: false
+            loggedIn: false,
+            codingBusAuth: {}
         };
     default:
         return state;
