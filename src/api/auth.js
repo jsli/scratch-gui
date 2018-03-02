@@ -1,4 +1,5 @@
 import constants from './constants.js';
+import Cookies from 'js-cookie';
 
 /*
 auth格式:
@@ -9,37 +10,32 @@ auth格式:
 */
 
 const getAuth = () => {
-    const auth = JSON.parse(localStorage.getItem(constants.CODING_BUS_USER));
-    return auth;
+    return Cookies.getJSON(constants.CODING_BUS_USER);
 };
 
 const getLoginAuth = (username, password) => {
-    const loginAuth = new Buffer(`${username}:${password}`).toString('base64');
-    return loginAuth;
+    return new Buffer(`${username}:${password}`).toString('base64');
 };
 
 const saveAuth = auth => {
-    localStorage.setItem(constants.CODING_BUS_USER, JSON.stringify(auth));
+    Cookies.set(constants.CODING_BUS_USER, JSON.stringify(auth), {
+        expires: new Date(auth.token_expires_at)
+    });
 };
 
 const cleanAuth = () => {
-    localStorage.removeItem(constants.CODING_BUS_USER);
+    Cookies.remove(constants.CODING_BUS_USER);
 };
 
 const authHeader = () => {
     const user = getAuth();
-    console.log('user = ', user);
-    console.log('access_token = ', user.access_token);
     if (user && user.access_token) {
-        const auth = new Buffer(`${user.access_token}:`).toString('base64');
-        console.warn('auth - ', auth)
-        // if (user.token_expires_at && (user.token_expires_at > new Date())) {
-        //     return auth;
-        // } else {
-        //     cleanAuth();
-        //     return '';
-        // }
-        return auth;
+        // 判断token是否过期
+        if (user.token_expires_at && (new Date(user.token_expires_at) > new Date())) {
+            return new Buffer(`${user.access_token}:`).toString('base64');
+        }
+        // 已过期，清除token
+        cleanAuth();
     }
 
     return '';

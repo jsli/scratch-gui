@@ -78,8 +78,6 @@ MenuBar.propTypes = {
 
 const mapStateToProps = state => {
     const {loggedIn, codingBusAuth} = state.authentication;
-    console.warn(state.authentication);
-    console.warn(codingBusAuth);
     return {
         codingBusAuth: codingBusAuth,
         loggedIn: loggedIn

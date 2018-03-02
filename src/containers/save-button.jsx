@@ -22,7 +22,6 @@ class SaveButton extends React.Component {
         const json = 'abfweelkfjelwjfew';
 
         const auth = authHeader();
-        console.error(auth)
         const requestOptions = {
             method: 'POST',
             headers: {
