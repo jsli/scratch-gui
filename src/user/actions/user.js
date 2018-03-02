@@ -70,7 +70,6 @@ const register = user => {
         userService.register(user)
             .then(
                 data => {
-                    console.log('432432432 ', data);
                     const _user = data.data;
                     // login successful if there's a jwt token in the response
                     // store user details and jwt token in local storage to keep user logged in between page refreshes
