@@ -38,9 +38,6 @@ const MenuBar = props => (
         <div
             className={styles.logoutButtonWrapper}
         >
-            <span className={classNames(styles.loginText, {[styles.hide]: !props.loggedIn})}>
-                {/*{props.codingBusAuth.nickname}*/}
-            </span>
             <Button
                 className={classNames(styles.loginButton, {[styles.hide]: props.loggedIn})}
                 onClick={props.onLogin}
