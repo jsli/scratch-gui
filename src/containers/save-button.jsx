@@ -5,24 +5,34 @@ import {connect} from 'react-redux';
 
 import ButtonComponent from '../components/button/button.jsx';
 import {ComingSoonTooltip} from '../components/coming-soon/coming-soon.jsx';
-import {projectService} from '../project/actions/project_service_async';
 
 
 class SaveButton extends React.Component {
     constructor (props) {
         super(props);
         bindAll(this, [
-            'handleOnlineSaveClick',
-            'handleOfflineSaveClick'
+            'handleClick'
         ]);
     }
-    handleOnlineSaveClick () {
+    handleClick () {
         const json = this.props.saveProjectSb3();
-        projectService.saveOnlineProject(json);
-    }
-    handleOfflineSaveClick () {
-        const json = this.props.saveProjectSb3();
-        projectService.saveOfflineProject(json);
+
+        // Download project data into a file - create link element,
+        // simulate click on it, and then remove it.
+        const saveLink = document.createElement('a');
+        document.body.appendChild(saveLink);
+
+        const data = new Blob([json], {type: 'text'});
+        const url = window.URL.createObjectURL(data);
+        saveLink.href = url;
+
+        // File name: project-DATE-TIME
+        const date = new Date();
+        const timestamp = `${date.toLocaleDateString()}-${date.toLocaleTimeString()}`;
+        saveLink.download = `project-${timestamp}.json`;
+        saveLink.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(saveLink);
     }
     render () {
         const {
@@ -35,7 +45,8 @@ class SaveButton extends React.Component {
                 tooltipId="save-button"
             >
                 <ButtonComponent
-                    onClick={this.handleOnlineSaveClick}
+                    disabled
+                    onClick={this.handleClick}
                     {...props}
                 >
                     Save
