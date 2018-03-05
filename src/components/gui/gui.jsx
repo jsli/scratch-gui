@@ -97,82 +97,82 @@ const GUIComponent = props => {
             <LoginModal />
             <RegisterModal />
             <MenuBar />
-            {/*<Box className={styles.bodyWrapper}>*/}
-                {/*<Box className={styles.flexWrapper}>*/}
-                    {/*<Box className={styles.editorWrapper}>*/}
-                        {/*<Tabs*/}
-                            {/*className={tabClassNames.tabs}*/}
-                            {/*forceRenderTabPanel={true} // eslint-disable-line react/jsx-boolean-value*/}
-                            {/*selectedIndex={activeTabIndex}*/}
-                            {/*selectedTabClassName={tabClassNames.tabSelected}*/}
-                            {/*selectedTabPanelClassName={tabClassNames.tabPanelSelected}*/}
-                            {/*onSelect={onActivateTab}*/}
-                        {/*>*/}
-                            {/*<TabList className={tabClassNames.tabList}>*/}
-                                {/*<Tab className={tabClassNames.tab}>Blocks</Tab>*/}
-                                {/*<Tab className={tabClassNames.tab}>Costumes</Tab>*/}
-                                {/*<Tab className={tabClassNames.tab}>Sounds</Tab>*/}
-                            {/*</TabList>*/}
-                            {/*<TabPanel className={tabClassNames.tabPanel}>*/}
-                                {/*<Box className={styles.blocksWrapper}>*/}
-                                    {/*<Blocks*/}
-                                        {/*grow={1}*/}
-                                        {/*isVisible={blocksTabVisible}*/}
-                                        {/*options={{*/}
-                                            {/*media: `${basePath}static/blocks-media/`*/}
-                                        {/*}}*/}
-                                        {/*vm={vm}*/}
-                                    {/*/>*/}
-                                {/*</Box>*/}
-                                {/*<Box className={styles.extensionButtonContainer}>*/}
-                                    {/*<button*/}
-                                        {/*className={styles.extensionButton}*/}
-                                        {/*title={intl.formatMessage(messages.addExtension)}*/}
-                                        {/*onClick={onExtensionButtonClick}*/}
-                                    {/*>*/}
-                                        {/*<img*/}
-                                            {/*className={styles.extensionButtonIcon}*/}
-                                            {/*draggable={false}*/}
-                                            {/*src={addExtensionIcon}*/}
-                                        {/*/>*/}
-                                    {/*</button>*/}
-                                {/*</Box>*/}
-                            {/*</TabPanel>*/}
-                            {/*<TabPanel className={tabClassNames.tabPanel}>*/}
-                                {/*{costumesTabVisible ? <CostumeTab vm={vm} /> : null}*/}
-                            {/*</TabPanel>*/}
-                            {/*<TabPanel className={tabClassNames.tabPanel}>*/}
-                                {/*{soundsTabVisible ? <SoundTab vm={vm} /> : null}*/}
-                            {/*</TabPanel>*/}
-                        {/*</Tabs>*/}
-                    {/*</Box>*/}
+            <Box className={styles.bodyWrapper}>
+                <Box className={styles.flexWrapper}>
+                    <Box className={styles.editorWrapper}>
+                        <Tabs
+                            className={tabClassNames.tabs}
+                            forceRenderTabPanel={true} // eslint-disable-line react/jsx-boolean-value
+                            selectedIndex={activeTabIndex}
+                            selectedTabClassName={tabClassNames.tabSelected}
+                            selectedTabPanelClassName={tabClassNames.tabPanelSelected}
+                            onSelect={onActivateTab}
+                        >
+                            <TabList className={tabClassNames.tabList}>
+                                <Tab className={tabClassNames.tab}>Blocks</Tab>
+                                <Tab className={tabClassNames.tab}>Costumes</Tab>
+                                <Tab className={tabClassNames.tab}>Sounds</Tab>
+                            </TabList>
+                            <TabPanel className={tabClassNames.tabPanel}>
+                                <Box className={styles.blocksWrapper}>
+                                    <Blocks
+                                        grow={1}
+                                        isVisible={blocksTabVisible}
+                                        options={{
+                                            media: `${basePath}static/blocks-media/`
+                                        }}
+                                        vm={vm}
+                                    />
+                                </Box>
+                                <Box className={styles.extensionButtonContainer}>
+                                    <button
+                                        className={styles.extensionButton}
+                                        title={intl.formatMessage(messages.addExtension)}
+                                        onClick={onExtensionButtonClick}
+                                    >
+                                        <img
+                                            className={styles.extensionButtonIcon}
+                                            draggable={false}
+                                            src={addExtensionIcon}
+                                        />
+                                    </button>
+                                </Box>
+                            </TabPanel>
+                            <TabPanel className={tabClassNames.tabPanel}>
+                                {costumesTabVisible ? <CostumeTab vm={vm} /> : null}
+                            </TabPanel>
+                            <TabPanel className={tabClassNames.tabPanel}>
+                                {soundsTabVisible ? <SoundTab vm={vm} /> : null}
+                            </TabPanel>
+                        </Tabs>
+                    </Box>
 
-                    {/*<Box className={styles.stageAndTargetWrapper}>*/}
-                        {/*<Box className={styles.stageMenuWrapper}>*/}
-                            {/*<StageHeader vm={vm} />*/}
-                        {/*</Box>*/}
-                        {/*<Box className={styles.stageWrapper}>*/}
-                            {/*/!* eslint-disable arrow-body-style *!/*/}
-                            {/*<MediaQuery minWidth={layout.fullSizeMinWidth}>{isFullSize => {*/}
-                                {/*return isRendererSupported ? (*/}
-                                    {/*<Stage*/}
-                                        {/*height={isFullSize ? layout.fullStageHeight : layout.smallerStageHeight}*/}
-                                        {/*shrink={0}*/}
-                                        {/*vm={vm}*/}
-                                        {/*width={isFullSize ? layout.fullStageWidth : layout.smallerStageWidth}*/}
-                                    {/*/>*/}
-                                {/*) : null;*/}
-                            {/*}}</MediaQuery>*/}
-                            {/*/!* eslint-enable arrow-body-style *!/*/}
-                        {/*</Box>*/}
-                        {/*<Box className={styles.targetWrapper}>*/}
-                            {/*<TargetPane*/}
-                                {/*vm={vm}*/}
-                            {/*/>*/}
-                        {/*</Box>*/}
-                    {/*</Box>*/}
-                {/*</Box>*/}
-            {/*</Box>*/}
+                    <Box className={styles.stageAndTargetWrapper}>
+                        <Box className={styles.stageMenuWrapper}>
+                            <StageHeader vm={vm} />
+                        </Box>
+                        <Box className={styles.stageWrapper}>
+                            {/* eslint-disable arrow-body-style */}
+                            <MediaQuery minWidth={layout.fullSizeMinWidth}>{isFullSize => {
+                                return isRendererSupported ? (
+                                    <Stage
+                                        height={isFullSize ? layout.fullStageHeight : layout.smallerStageHeight}
+                                        shrink={0}
+                                        vm={vm}
+                                        width={isFullSize ? layout.fullStageWidth : layout.smallerStageWidth}
+                                    />
+                                ) : null;
+                            }}</MediaQuery>
+                            {/* eslint-enable arrow-body-style */}
+                        </Box>
+                        <Box className={styles.targetWrapper}>
+                            <TargetPane
+                                vm={vm}
+                            />
+                        </Box>
+                    </Box>
+                </Box>
+            </Box>
         </Box>
     );
 };
