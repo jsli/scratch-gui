@@ -187,3 +187,7 @@ $fade-out-distance: 15px;
 .extension-button > div {
     margin-top: 0;
 }
+
+.hide {
+    display:none;
+}
