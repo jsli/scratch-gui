@@ -129,3 +129,7 @@
 .hide {
     display:none;
 }
+
+.radius {
+    border-radius: 25px;
+}
