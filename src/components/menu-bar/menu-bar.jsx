@@ -8,7 +8,7 @@ import Box from '../box/box.jsx';
 import Button from '../button/button.jsx';
 import LoadButton from '../../containers/load-button.jsx';
 import SaveButton from '../../containers/save-button.jsx';
-import ProjectButton from '../../project/project-button.jsx';
+import ProjectMenu from '../../project/project-menu.jsx';
 import LanguageSelector from '../../containers/language-selector.jsx';
 
 import styles from './menu-bar.css';
@@ -35,7 +35,7 @@ const MenuBar = props => (
             <SaveButton className={styles.menuItem} />
             <LoadButton className={styles.menuItem} />
             <LanguageSelector className={styles.menuItem} />
-            <ProjectButton className={styles.menuItem} />
+            <ProjectMenu className={styles.menuItem} />
         </div>
         <div
             className={styles.logoutButtonWrapper}
