@@ -2,9 +2,12 @@ import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
+import log from '../lib/log.js';
 
 import Menu, {MenuItem} from 'material-ui/Menu';
 import Button from 'material-ui/Button';
+import {projectService} from './actions/project_service_async.js';
+import VM from "scratch-vm";
 
 class ProjectMenu extends React.Component {
     constructor (props) {
@@ -12,7 +15,6 @@ class ProjectMenu extends React.Component {
         bindAll(this, [
             'handleClick',
             'handleClose',
-            'handleItemClick',
             'openMenu',
             'closeMenu',
             'handleNewClick',
@@ -30,7 +32,7 @@ class ProjectMenu extends React.Component {
     }
 
     openMenu (anchorEl) {
-        this.setState({anchorEl: anchorEl, openMenu: false});
+        this.setState({anchorEl: anchorEl, openMenu: true});
     }
 
     closeMenu () {
@@ -50,6 +52,9 @@ class ProjectMenu extends React.Component {
     }
 
     handleNewLocalClick () {
+        log.info('new local project');
+        this.props.newProject();
+        this.props.vm.refreshWorkspace();
         this.closeMenu();
     }
 
@@ -58,7 +63,11 @@ class ProjectMenu extends React.Component {
     }
 
     handleSaveLocalClick () {
+        log.info('save local project');
         this.closeMenu();
+        const json = this.props.saveProjectSb3();
+        log.debug('source code: ', json);
+        projectService.saveOfflineProject(json, 'xxx');
     }
 
     handleLoadClick () {
@@ -105,11 +114,15 @@ class ProjectMenu extends React.Component {
 }
 
 ProjectMenu.propTypes = {
-    saveProjectSb3: PropTypes.func.isRequired
+    newProject: PropTypes.func.isRequired,
+    saveProjectSb3: PropTypes.func.isRequired,
+    vm: PropTypes.instanceOf(VM).isRequired
 };
 
 const mapStateToProps = state => ({
-    saveProjectSb3: state.vm.saveProjectSb3.bind(state.vm)
+    newProject: state.vm.clear.bind(state.vm),
+    saveProjectSb3: state.vm.saveProjectSb3.bind(state.vm),
+    vm: state.vm
 });
 
 export default connect(
