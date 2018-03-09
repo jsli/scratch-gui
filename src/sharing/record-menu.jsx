@@ -1,13 +1,10 @@
 import bindAll from 'lodash.bindall';
-import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import log from '../lib/log.js';
 
 import Menu, {MenuItem} from 'material-ui/Menu';
 import Button from 'material-ui/Button';
-import {projectService} from './actions/project_service_async.js';
-import VM from 'scratch-vm';
 import {desktopCapturer} from 'electron';
 
 import MediaStreamRecorder from 'msr';
@@ -51,38 +48,43 @@ class RecordMenu extends React.Component {
     handleStartClick () {
         this.closeMenu();
 
+        log.debug('try to record window');
         desktopCapturer.getSources({types: ['window']}, (error, sources) => {
             if (error) {
-                throw error;
-            }
-
-            for (let i = 0; i < sources.length; ++i) {
-                if (sources[i].name === 'Scratch 3.0 GUI') {
-                    navigator.mediaDevices.getUserMedia({
-                        audio: false,
-                        video: {
-                            mandatory: {
-                                chromeMediaSource: 'desktop',
-                                chromeMediaSourceId: sources[i].id,
-                                minWidth: 1920,
-                                maxWidth: 1920,
-                                minHeight: 1080,
-                                maxHeight: 1080
+                log.debug('get window source error: ', error);
+            } else {
+                for (let i = 0; i < sources.length; ++i) {
+                    if (sources[i].name === 'Scratch 3.0 GUI') {
+                        log.debug('got scratch window source: ', sources[i]);
+                        navigator.mediaDevices.getUserMedia({
+                            audio: false,
+                            video: {
+                                mandatory: {
+                                    chromeMediaSource: 'desktop',
+                                    chromeMediaSourceId: sources[i].id,
+                                    minWidth: 1920,
+                                    maxWidth: 1920,
+                                    minHeight: 1080,
+                                    maxHeight: 1080
+                                }
                             }
-                        }
-                    })
-                        .then(stream => {
-                            this.mediaStreamRecorder = new MediaStreamRecorder(stream);
-                            this.mediaStreamRecorder.mimeType = 'video/mp4';
-                            this.mediaStreamRecorder.ondataavailable = blob => {
-                                this.mediaStreamRecorder.save(blob, 'FileName.mp4');
-                            };
-                            this.mediaStreamRecorder.start();
                         })
-                        .catch(e => {
-                            console.warn('--got stream error ---', e);
-                        });
-                    break;
+                            .then(stream => {
+                                log.debug('got scratch window stream: ', stream);
+                                this.mediaStreamRecorder = new MediaStreamRecorder(stream);
+                                this.mediaStreamRecorder.mimeType = 'video/mp4';
+                                this.mediaStreamRecorder.ondataavailable = blob => {
+                                    log.debug('got recording data');
+                                    this.mediaStreamRecorder.save(blob, 'scratch3-project.mp4');
+                                };
+                                log.debug('start to record window');
+                                this.mediaStreamRecorder.start();
+                            })
+                            .catch(e => {
+                                log.debug('fetch scratch window stream error: ', e);
+                            });
+                        break;
+                    }
                 }
             }
         });
@@ -92,6 +94,7 @@ class RecordMenu extends React.Component {
         this.closeMenu();
 
         if (this.mediaStreamRecorder) {
+            log.debug('stop recording window');
             this.mediaStreamRecorder.stop();
         }
     }
@@ -126,13 +129,7 @@ class RecordMenu extends React.Component {
     }
 }
 
-RecordMenu.propTypes = {
-};
-
-const mapStateToProps = state => ({
-});
-
 export default connect(
-    mapStateToProps,
+    () => ({}),
     () => ({}) // omit dispatch prop
 )(RecordMenu);
