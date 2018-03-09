@@ -32,6 +32,7 @@ module.exports = {
         React: 'react',
         ReactDOM: 'react-dom'
     },
+    target: 'electron-renderer',
     module: {
         rules: [{
             test: /\.jsx?$/,
