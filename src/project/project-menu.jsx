@@ -18,7 +18,6 @@ class ProjectMenu extends React.Component {
             'openMenu',
             'closeMenu',
             'handleNewClick',
-            'handleNewLocalClick',
             'handleSaveClick',
             'handleSaveLocalClick',
             'handleLoadClick',
@@ -49,25 +48,57 @@ class ProjectMenu extends React.Component {
 
     handleNewClick () {
         this.closeMenu();
-    }
-
-    handleNewLocalClick () {
-        log.info('new local project');
-        this.props.newProject();
-        this.props.vm.refreshWorkspace();
-        this.closeMenu();
+        // TODO: 暴力刷新，对话框提示
+        if (this.props.loggedIn) {
+            // TODO: 已登录
+            // 1. dialog接收新建项目名称
+            // 2. 创建项目，创建个空项目
+            projectService.newOnlineProject()
+                .then(data => {
+                    // 3. 将projectid增加到url哈希
+                    location.replace("http://www.runoob.com");
+                })
+                .catch(e => {
+                    location.reload(true);
+                });
+        } else {
+            // 未登录，直接刷新
+            location.reload(true);
+        }
     }
 
     handleSaveClick () {
         this.closeMenu();
+        if (this.props.loggedIn) {
+            this.props.vm.saveProjectSb3().then(content => {
+                // TODO: props中需要设置当前编辑的project
+                projectService.saveOnlineProject(project, content);
+            });
+        } else {
+            // TODO: 提示请登录
+        }
     }
 
     handleSaveLocalClick () {
-        log.info('save local project');
         this.closeMenu();
-        const json = this.props.saveProjectSb3();
-        log.debug('source code: ', json);
-        projectService.saveOfflineProject(json, 'xxx');
+
+        log.info('save project locally');
+        const saveLink = document.createElement('a');
+        document.body.appendChild(saveLink);
+        this.props.vm.saveProjectSb3().then(content => {
+            const url = window.URL.createObjectURL(content);
+            saveLink.href = url;
+
+            // TODO user-friendly project name
+            // File name: project-DATE-TIME
+            const date = new Date();
+            const timestamp = `${date.toLocaleDateString()}-${date.toLocaleTimeString()}`;
+            // TODO change extension to sb3
+            saveLink.download = `project-${timestamp}.zip`;
+            saveLink.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(saveLink);
+        });
     }
 
     handleLoadClick () {
@@ -80,7 +111,7 @@ class ProjectMenu extends React.Component {
 
     render () {
         const {
-            saveProjectSb3, // eslint-disable-line no-unused-vars
+            vm, // eslint-disable-line no-unused-vars
             ...props
         } = this.props;
 
@@ -102,7 +133,6 @@ class ProjectMenu extends React.Component {
                     onClose={this.handleClose}
                 >
                     <MenuItem onClick={this.handleNewClick}>New</MenuItem>
-                    <MenuItem onClick={this.handleNewLocalClick}>New(local)</MenuItem>
                     <MenuItem onClick={this.handleSaveClick}>Save</MenuItem>
                     <MenuItem onClick={this.handleSaveLocalClick}>Save(local)</MenuItem>
                     <MenuItem onClick={this.handleLoadClick}>Load</MenuItem>
@@ -114,16 +144,18 @@ class ProjectMenu extends React.Component {
 }
 
 ProjectMenu.propTypes = {
-    newProject: PropTypes.func.isRequired,
-    saveProjectSb3: PropTypes.func.isRequired,
+    loggedIn: PropTypes.bool,
     vm: PropTypes.instanceOf(VM).isRequired
 };
 
-const mapStateToProps = state => ({
-    newProject: state.vm.clear.bind(state.vm),
-    saveProjectSb3: state.vm.saveProjectSb3.bind(state.vm),
-    vm: state.vm
-});
+const mapStateToProps = state => {
+    const {loggedIn} = state.authentication;
+    const vm = state.vm;
+    return {
+        loggedIn,
+        vm
+    };
+};
 
 export default connect(
     mapStateToProps,
