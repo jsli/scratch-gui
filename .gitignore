@@ -12,6 +12,7 @@ npm-*
 # Build
 /build
 /.opt-in
+/electron-build
 
 # generated translation files
 /translations
