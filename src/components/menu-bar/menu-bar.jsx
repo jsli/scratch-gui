@@ -8,7 +8,7 @@ import Box from '../box/box.jsx';
 import Button from '../button/button.jsx';
 import LoadButton from '../../containers/load-button.jsx';
 import SaveButton from '../../containers/save-button.jsx';
-// import ProjectMenu from '../../project/project-menu.jsx';
+import ProjectMenu from '../../project/project-menu.jsx';
 // import RecordMenu from '../../sharing/record-menu.jsx';
 import LanguageSelector from '../../containers/language-selector.jsx';
 
@@ -36,6 +36,7 @@ const MenuBar = props => (
             <SaveButton className={styles.menuItem} />
             <LoadButton className={styles.menuItem} />
             <LanguageSelector className={styles.menuItem} />
+            <ProjectMenu className={styles.menuItem} />
             {/*<RecordMenu className={styles.menuItem} />*/}
         </div>
         <div

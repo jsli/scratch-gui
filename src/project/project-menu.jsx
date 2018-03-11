@@ -9,6 +9,8 @@ import Button from 'material-ui/Button';
 import {projectService} from './actions/project_service_async.js';
 import VM from "scratch-vm";
 
+import styles from './project-menu.css';
+
 class ProjectMenu extends React.Component {
     constructor (props) {
         super(props);
@@ -21,7 +23,9 @@ class ProjectMenu extends React.Component {
             'handleSaveClick',
             'handleSaveLocalClick',
             'handleLoadClick',
-            'handleLoadLocalClick'
+            'handleLoadLocalClick',
+            'setFileInput',
+            'handleFileChange'
         ]);
 
         this.state = {
@@ -103,10 +107,27 @@ class ProjectMenu extends React.Component {
 
     handleLoadClick () {
         this.closeMenu();
+
+        // TODO: 加载线上项目
     }
 
     handleLoadLocalClick () {
         this.closeMenu();
+
+        // 打开文件选择
+        this.fileInput.click();
+    }
+
+    setFileInput (input) {
+        this.fileInput = input;
+    }
+
+    handleFileChange (e) {
+        // 打开项目文件
+        const reader = new FileReader();
+        // 通过vm加在项目文件
+        reader.onload = () => this.props.vm.loadProjectLocal(reader.result);
+        reader.readAsArrayBuffer(e.target.files[0]);
     }
 
     render () {
@@ -138,6 +159,12 @@ class ProjectMenu extends React.Component {
                     <MenuItem onClick={this.handleLoadClick}>Load</MenuItem>
                     <MenuItem onClick={this.handleLoadLocalClick}>Load(local)</MenuItem>
                 </Menu>
+                <input
+                    className={styles.fileInput}
+                    ref={this.setFileInput}
+                    type="file"
+                    onChange={this.handleFileChange}
+                />
             </div>
         );
     }
