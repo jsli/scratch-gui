@@ -2,8 +2,8 @@ import ScratchStorage from 'scratch-storage';
 
 import defaultProjectAssets from './default-project';
 
-const PROJECT_SERVER = 'http://127.0.0.1:5000/project/meta';
-const ASSET_SERVER = 'http://127.0.0.1:5000/project/assets';
+const PROJECT_SERVER = 'http://127.0.0.1:5000/static/project';
+const ASSET_SERVER = 'http://127.0.0.1:5000/static/assets';
 
 /**
  * Wrapper for ScratchStorage which adds default web sources.
@@ -17,8 +17,8 @@ class Storage extends ScratchStorage {
             projectAsset => {
                 const [projectId, revision] = projectAsset.assetId.split('.');
                 return revision ?
-                    `${PROJECT_SERVER}/${projectId}/${revision}` :
-                    `${PROJECT_SERVER}/${projectId}/1`;
+                    `${PROJECT_SERVER}/${projectId}/${revision}/project.json` :
+                    `${PROJECT_SERVER}/${projectId}/1/project.json`;
             }
         );
         this.addWebSource(
