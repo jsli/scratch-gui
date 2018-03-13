@@ -11,5 +11,5 @@ export default {
     register: getApi('/user/register'),
 
     // 项目相关
-    project: getApi('/scratch/project')
+    project: getApi('/project')
 };

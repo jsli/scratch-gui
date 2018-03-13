@@ -1,43 +1,49 @@
 import api from '../../api/apis.js';
-import {checkResponse} from '../../api/gateway';
+import {checkResponse, catchResponse, successResponse} from '../../api/gateway';
 import {authHeader} from '../../api/auth';
 
-import {FormData} from 'form-data';
+import log from '../../lib/log.js';
 
-// 保存项目-在线
-const saveOnlineProject = (project, sourceCodeZip) => {
+
+// 获取项目
+const fetchProjectInfo = projectId => {
+    const auth = authHeader();
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Basic ${auth}`
+        }
+    };
+
+    return fetch(`${api.project}/${projectId}`, requestOptions)
+        .then(checkResponse)
+        .then(successResponse)
+        .catch(catchResponse);
+};
+
+// 上传项目
+const uploadProject = (projectId, sourceCodeZip) => {
+    const form = new FormData();
+    form.append(`${projectId}.zip`, sourceCodeZip);
+
     const auth = authHeader();
     const requestOptions = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/zip',
-            'Authorization': `Basic ${auth}`
+            Authorization: `Basic ${auth}`
         },
-        body: sourceCodeZip
+        body: form
     };
 
-    return fetch(`${api.project}/${project.no}`, requestOptions)
+    return fetch(`${api.project}/${projectId}/upload`, requestOptions)
         .then(checkResponse)
-        .then(
-            data => {
-                // TODO: 保存项目成功
-                console.warn(data);
-            }
-        )
-        .catch(
-            errorResponse => {
-                errorResponse.json().then(
-                    error => {
-                        // TODO: 保存项目失败
-                        console.error(error);
-                    }
-                );
-            }
-        );
+        .then(successResponse)
+        .catch(catchResponse);
 };
 
-// 新建项目-在线
-const newOnlineProject = project => {
+// 创建项目
+const createProject = (project = null) => {
     const auth = authHeader();
     const requestOptions = {
         method: 'POST',
@@ -46,31 +52,18 @@ const newOnlineProject = project => {
             'Authorization': `Basic ${auth}`
         },
         body: JSON.stringify({
-            name: project.name,
-            version: 3,
-            memo: project.memo
+            name: project ? project.name : '',
+            memo: project ? project.memo : ''
         })
     };
 
     return fetch(api.project, requestOptions)
         .then(checkResponse)
-        .then(
-            data => {
-                console.warn(data);
-            }
-        )
-        .catch(
-            errorResponse => {
-                errorResponse.json().then(
-                    error => {
-                        console.error(error);
-                    }
-                );
-            }
-        );
+        .then(successResponse)
+        .catch(catchResponse);
 };
 
 export const projectService = {
-    saveOnlineProject,
-    newOnlineProject
+    uploadProject,
+    createProject
 };

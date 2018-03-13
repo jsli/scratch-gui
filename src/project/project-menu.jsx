@@ -7,9 +7,16 @@ import log from '../lib/log.js';
 import Menu, {MenuItem} from 'material-ui/Menu';
 import Button from 'material-ui/Button';
 import {projectService} from './actions/project_service_async.js';
-import VM from "scratch-vm";
+import VM from 'scratch-vm';
 
 import styles from './project-menu.css';
+
+/*
+ * ProjectMenu部分功能独立于project-loader-hoc.jsx
+ * 1. 项目上传功能是独立的，projectId并不体现在url的hash中，内部保存
+ * 2. 当加载线上项目时，会复用project-loader-hoc.jsx的功能，ProjectMenu会拼接url+hash，并刷新，将加载工作交给project-loader-hoc
+ * 3. 新建项目时，会强制刷新，所有状态都初始化(除了登录状态)
+ */
 
 class ProjectMenu extends React.Component {
     constructor (props) {
@@ -20,17 +27,20 @@ class ProjectMenu extends React.Component {
             'openMenu',
             'closeMenu',
             'handleNewClick',
-            'handleSaveClick',
-            'handleSaveLocalClick',
-            'handleLoadClick',
-            'handleLoadLocalClick',
+            'handleUploadClick',
+            'handleFetchClick',
+            'handleExportClick',
+            'handleImportClick',
             'setFileInput',
-            'handleFileChange'
+            'handleFileChange',
+            'fetchProjectId'
         ]);
 
         this.state = {
             anchorEl: null,
-            openMenu: false
+            openMenu: false,
+            projectId: this.fetchProjectId(),
+            uploadingProject: false
         };
     }
 
@@ -53,37 +63,68 @@ class ProjectMenu extends React.Component {
     handleNewClick () {
         this.closeMenu();
         // TODO: 暴力刷新，对话框提示
-        if (this.props.loggedIn) {
-            // TODO: 已登录
-            // 1. dialog接收新建项目名称
-            // 2. 创建项目，创建个空项目
-            projectService.newOnlineProject()
-                .then(data => {
-                    // 3. 将projectid增加到url哈希
-                    location.replace("http://www.runoob.com");
-                })
-                .catch(e => {
-                    location.reload(true);
-                });
-        } else {
-            // 未登录，直接刷新
-            location.reload(true);
-        }
+        location.replace(location.origin);
     }
 
-    handleSaveClick () {
+    handleUploadClick () {
         this.closeMenu();
         if (this.props.loggedIn) {
-            this.props.vm.saveProjectSb3().then(content => {
-                // TODO: props中需要设置当前编辑的project
-                projectService.saveOnlineProject(project, content);
-            });
+            const projectId = this.fetchProjectId();
+            this.setState({uploadingProject: true});
+            if (projectId) {
+                // 直接上传
+                this.setState({projectId: projectId});
+                this.props.vm.saveProjectSb3().then(content => {
+                    log.debug('zip project ok.');
+                    projectService.uploadProject(projectId, content)
+                        .then(uploadResponse => {
+                            this.setState({uploadingProject: false});
+                            log.debug('after upload project: ', uploadResponse);
+                        })
+                        .catch(uploadError => {
+                            this.setState({uploadingProject: false});
+                            uploadError.json().then(_uploadError => {
+                                log.debug('after upload project: ', _uploadError);
+                            });
+                        });
+                });
+            } else {
+                // 先创建项目，然后上传
+                projectService.createProject()
+                    .then(data => {
+                        const projectInfo = data.data;
+                        log.debug('create new project: ', projectInfo);
+                        log.debug('begin upload project: ', projectInfo);
+                        this.setState({projectId: projectInfo.no});
+                        this.props.vm.saveProjectSb3().then(content => {
+                            log.debug('zip project ok.');
+                            projectService.uploadProject(projectInfo.no, content)
+                                .then(uploadResponse => {
+                                    this.setState({uploadingProject: false});
+                                    log.debug('after upload project: ', uploadResponse);
+                                })
+                                .catch(uploadError => {
+                                    this.setState({uploadingProject: false});
+                                    uploadError.json().then(_uploadError => {
+                                        log.debug('after upload project: ', _uploadError);
+                                    });
+                                });
+                        });
+                    })
+                    .catch(e => {
+                        e.json().then(response => {
+                            log.error('create new project error: ', response);
+                        });
+                    });
+            }
         } else {
             // TODO: 提示请登录
+            log.error('Please login firstly!');
         }
     }
 
-    handleSaveLocalClick () {
+    handleExportClick () {
+        // 导出项目到本地
         this.closeMenu();
 
         log.info('save project locally');
@@ -105,13 +146,17 @@ class ProjectMenu extends React.Component {
         });
     }
 
-    handleLoadClick () {
+    handleFetchClick () {
         this.closeMenu();
 
         // TODO: 加载线上项目
+        const url = `${location.origin}#998f38b9288195797d2e69a3c19fc5`
+        location.replace(url);
     }
 
-    handleLoadLocalClick () {
+    handleImportClick () {
+        // 从本地导入项目
+
         this.closeMenu();
 
         // 打开文件选择
@@ -128,6 +173,10 @@ class ProjectMenu extends React.Component {
         // 通过vm加在项目文件
         reader.onload = () => this.props.vm.loadProjectLocal(reader.result);
         reader.readAsArrayBuffer(e.target.files[0]);
+    }
+
+    fetchProjectId () {
+        return window.location.hash.substring(1);
     }
 
     render () {
@@ -154,10 +203,10 @@ class ProjectMenu extends React.Component {
                     onClose={this.handleClose}
                 >
                     <MenuItem onClick={this.handleNewClick}>New</MenuItem>
-                    <MenuItem onClick={this.handleSaveClick}>Save</MenuItem>
-                    <MenuItem onClick={this.handleSaveLocalClick}>Save(local)</MenuItem>
-                    <MenuItem onClick={this.handleLoadClick}>Load</MenuItem>
-                    <MenuItem onClick={this.handleLoadLocalClick}>Load(local)</MenuItem>
+                    <MenuItem onClick={this.handleFetchClick}>Fetch</MenuItem>
+                    <MenuItem onClick={this.handleUploadClick}>Upload</MenuItem>
+                    <MenuItem onClick={this.handleExportClick}>Export</MenuItem>
+                    <MenuItem onClick={this.handleImportClick}>Import</MenuItem>
                 </Menu>
                 <input
                     className={styles.fileInput}
