@@ -33,9 +33,9 @@ const MenuBar = props => (
                     src={scratchLogo}
                 />
             </div>
-            <SaveButton className={styles.menuItem} />
-            <LoadButton className={styles.menuItem} />
-            <LanguageSelector className={styles.menuItem} />
+            <SaveButton className={classNames(styles.hide, styles.menuItem)} />
+            <LoadButton className={classNames(styles.hide, styles.menuItem)} />
+            <LanguageSelector className={classNames(styles.hide, styles.menuItem)} />
             <ProjectMenu className={styles.menuItem} />
             {/*<RecordMenu className={styles.menuItem} />*/}
         </div>

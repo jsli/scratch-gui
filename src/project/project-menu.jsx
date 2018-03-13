@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import log from '../lib/log.js';
 
 import Menu, {MenuItem} from 'material-ui/Menu';
-import Button from 'material-ui/Button';
+import ButtonComponent from '../components/button/button.jsx';
 import {projectService} from './actions/project_service_async.js';
 import VM from 'scratch-vm';
 
@@ -189,13 +189,13 @@ class ProjectMenu extends React.Component {
 
         return (
             <div className={props.className}>
-                <Button
+                <ButtonComponent
                     aria-haspopup={'true'}
                     aria-owns={anchorEl ? 'project-menu' : null}
                     onClick={this.handleClick}
                 >
                     Project
-                </Button>
+                </ButtonComponent>
                 <Menu
                     anchorEl={anchorEl}
                     id={'project-menu'}
