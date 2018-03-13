@@ -206,7 +206,10 @@ class ProjectMenu extends React.Component {
         projectList.map(project => (
             projectListItem.push(
                 <ListItem key={project.no}>
-                    <a onClick={this.closeProjectList} href={`${location.origin}#${project.no}.${project.version ? project.version : 1}`}>
+                    <a
+                        href={`${location.origin}#${project.no}.${project.version ? project.version : 1}`}
+                        onClick={this.closeProjectList}
+                    >
                         {project.no}
                     </a>
                 </ListItem>
