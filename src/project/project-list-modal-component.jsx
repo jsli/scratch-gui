@@ -12,6 +12,7 @@ const ProjectListModal = props => (
         className={styles.modalContent}
         isOpen={props.isOpen}
         overlayClassName={styles.modalOverlay}
+        onRequestClose={props.onRequestClose}
     >
         <Box className={styles.body}>
             <List>
@@ -23,6 +24,7 @@ const ProjectListModal = props => (
 
 ProjectListModal.propTypes = {
     isOpen: PropTypes.bool,
+    onRequestClose: PropTypes.func.isRequired,
     projectListItem: PropTypes.array
 };
 

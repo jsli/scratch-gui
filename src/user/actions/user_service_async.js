@@ -1,6 +1,6 @@
 import api from '../../api/apis.js';
-import {checkResponse} from '../../api/gateway';
-import {cleanAuth, getLoginAuth, saveAuth} from '../../api/auth';
+import {cleanAuth, getLoginAuth} from '../../api/auth';
+import {checkResponse, catchResponse, successResponse} from '../../api/gateway';
 
 const login = (username, password) => {
     const auth = getLoginAuth(username, password);
@@ -13,7 +13,9 @@ const login = (username, password) => {
     };
 
     return fetch(api.login, requestOptions)
-        .then(checkResponse);
+        .then(checkResponse)
+        .then(successResponse)
+        .catch(catchResponse);
 };
 
 const register = registerInfo => {
@@ -26,7 +28,9 @@ const register = registerInfo => {
     };
 
     return fetch(api.register, requestOptions)
-        .then(checkResponse);
+        .then(checkResponse)
+        .then(successResponse)
+        .catch(catchResponse);
 };
 
 const logout = () => {

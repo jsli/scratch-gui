@@ -253,6 +253,7 @@ class ProjectMenu extends React.Component {
                 <ProjectListModal
                     isOpen={openProjectList}
                     projectListItem={projectListItem}
+                    onRequestClose={this.closeProjectList}
                 />
             </div>
         );
