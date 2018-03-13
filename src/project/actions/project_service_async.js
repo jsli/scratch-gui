@@ -5,8 +5,8 @@ import {authHeader} from '../../api/auth';
 import log from '../../lib/log.js';
 
 
-// 获取项目
-const fetchProjectInfo = projectId => {
+// 获取项目列表
+const fetchProjectList = () => {
     const auth = authHeader();
     const requestOptions = {
         method: 'GET',
@@ -16,7 +16,7 @@ const fetchProjectInfo = projectId => {
         }
     };
 
-    return fetch(`${api.project}/${projectId}`, requestOptions)
+    return fetch(`${api.project}/list`, requestOptions)
         .then(checkResponse)
         .then(successResponse)
         .catch(catchResponse);
@@ -65,5 +65,6 @@ const createProject = (project = null) => {
 
 export const projectService = {
     uploadProject,
-    createProject
+    createProject,
+    fetchProjectList
 };

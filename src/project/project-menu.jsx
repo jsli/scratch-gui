@@ -8,6 +8,8 @@ import Menu, {MenuItem} from 'material-ui/Menu';
 import ButtonComponent from '../components/button/button.jsx';
 import {projectService} from './actions/project_service_async.js';
 import VM from 'scratch-vm';
+import ProjectListModal from './project-list-modal-component.jsx';
+import {ListItem} from 'material-ui/List';
 
 import styles from './project-menu.css';
 
@@ -33,14 +35,19 @@ class ProjectMenu extends React.Component {
             'handleImportClick',
             'setFileInput',
             'handleFileChange',
-            'fetchProjectId'
+            'fetchProjectId',
+            'renderProjectList',
+            'closeProjectList'
         ]);
 
         this.state = {
             anchorEl: null,
             openMenu: false,
             projectId: this.fetchProjectId(),
-            uploadingProject: false
+            uploadingProject: false,
+            openProjectList: false,
+            projectList: [],
+            projectListItem: []
         };
     }
 
@@ -149,9 +156,20 @@ class ProjectMenu extends React.Component {
     handleFetchClick () {
         this.closeMenu();
 
-        // TODO: 加载线上项目
-        const url = `${location.origin}#998f38b9288195797d2e69a3c19fc5`
-        location.replace(url);
+        projectService.fetchProjectList()
+            .then(data => {
+                const projectList = data.data.items;
+                for (let i = 0; i < projectList.length; i++) {
+                    const project = projectList[i];
+                    log.debug('project = ', project);
+                }
+                this.renderProjectList(projectList);
+            })
+            .catch(e => {
+                e.json().then(response => {
+                    log.error('fetch project list error: ', response);
+                });
+            });
     }
 
     handleImportClick () {
@@ -179,13 +197,31 @@ class ProjectMenu extends React.Component {
         return window.location.hash.substring(1);
     }
 
+    closeProjectList () {
+        this.setState({projectListItem: [], openProjectList: false});
+    }
+
+    renderProjectList (projectList) {
+        const projectListItem = [];
+        projectList.map(project => (
+            projectListItem.push(
+                <ListItem key={project.no}>
+                    <a onClick={this.closeProjectList} href={`${location.origin}#${project.no}.${project.version ? project.version : 1}`}>
+                        {project.no}
+                    </a>
+                </ListItem>
+            )
+        ));
+        this.setState({projectListItem: projectListItem, openProjectList: true});
+    }
+
     render () {
         const {
             vm, // eslint-disable-line no-unused-vars
             ...props
         } = this.props;
 
-        const {anchorEl, openMenu} = this.state;
+        const {anchorEl, openMenu, openProjectList, projectListItem} = this.state;
 
         return (
             <div className={props.className}>
@@ -213,6 +249,10 @@ class ProjectMenu extends React.Component {
                     ref={this.setFileInput}
                     type="file"
                     onChange={this.handleFileChange}
+                />
+                <ProjectListModal
+                    isOpen={openProjectList}
+                    projectListItem={projectListItem}
                 />
             </div>
         );

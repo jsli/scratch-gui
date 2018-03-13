@@ -103,7 +103,7 @@ const GUIComponent = props => {
             <LoginModal />
             <RegisterModal />
             <MenuBar />
-            <Box className={classNames(styles.bodyWrapper, styles.hide)}>
+            <Box className={classNames(styles.bodyWrapper)}>
                 <Box className={styles.flexWrapper}>
                     <Box className={styles.editorWrapper}>
                         <Tabs
