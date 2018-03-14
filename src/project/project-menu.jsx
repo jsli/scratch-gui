@@ -17,7 +17,7 @@ import styles from './project-menu.css';
 
 /*
  * ProjectMenu部分功能独立于project-loader-hoc.jsx
- * 1. 项目上传功能是独立的，projectId并不体现在url的hash中，内部保存
+ * 1. 项目上传功能是独立的，projectId通过event传递给project-loader-hoc.jsx
  * 2. 当加载线上项目时，会复用project-loader-hoc.jsx的功能，ProjectMenu会拼接url+hash，并刷新，将加载工作交给project-loader-hoc
  * 3. 新建项目时，会强制刷新，所有状态都初始化(除了登录状态)
  */
