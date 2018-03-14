@@ -49,7 +49,7 @@ const ProjectLoaderHOC = function (WrappedComponent) {
             }
         }
         componentWillUnmount () {
-            projectEvent.removeListener('upload_project_id', this.updateProjectIdOnly);
+            projectEvent.removeListener(EVENT_UPDATE_PROJECT_ID_ONLY, this.updateProjectIdOnly);
             window.removeEventListener('hashchange', this.updateProject);
         }
         fetchProjectId () {
