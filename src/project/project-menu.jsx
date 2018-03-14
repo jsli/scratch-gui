@@ -9,7 +9,9 @@ import ButtonComponent from '../components/button/button.jsx';
 import {projectService} from './actions/project_service_async.js';
 import VM from 'scratch-vm';
 import ProjectListModal from './project-list-modal-component.jsx';
-import {ListItem} from 'material-ui/List';
+import List, {ListItem} from 'material-ui/List';
+
+import projectEvent, {EVENT_UPDATE_PROJECT_ID_ONLY} from './actions/project_event.js';
 
 import styles from './project-menu.css';
 
@@ -29,25 +31,23 @@ class ProjectMenu extends React.Component {
             'openMenu',
             'closeMenu',
             'handleNewClick',
-            'handleUploadClick',
+            'handleSaveClick',
             'handleFetchClick',
             'handleExportClick',
             'handleImportClick',
-            'setFileInput',
-            'handleFileChange',
-            'fetchProjectId',
+            'setImportFile',
+            'handleImportFileChange',
             'renderProjectList',
-            'closeProjectList'
+            'handleCloseProjectList'
         ]);
 
         this.state = {
             anchorEl: null,
             openMenu: false,
-            projectId: this.fetchProjectId(),
+            projectId: window.location.hash.substring(1),
             uploadingProject: false,
             openProjectList: false,
-            projectList: [],
-            projectListItem: []
+            projectList: null
         };
     }
 
@@ -59,42 +59,52 @@ class ProjectMenu extends React.Component {
         this.setState({anchorEl: null, openMenu: false});
     }
 
+    // 点击menu
     handleClick (event) {
         this.openMenu(event.currentTarget);
     }
 
+    // 关闭menu
     handleClose () {
         this.closeMenu();
     }
 
+    // 新建项目
     handleNewClick () {
         this.closeMenu();
         // TODO: 暴力刷新，对话框提示
         location.replace(location.origin);
     }
 
-    handleUploadClick () {
+    // 保存项目
+    handleSaveClick () {
         this.closeMenu();
+
+        const uploadAction = projectId => {
+            this.setState({projectId: projectId});
+
+            this.props.vm.saveProjectSb3().then(content => {
+                log.debug('zip project ok.');
+                projectService.uploadProject(projectId, content)
+                    .then(uploadResponse => {
+                        this.setState({uploadingProject: false});
+                        log.debug('after upload project: ', uploadResponse);
+                    })
+                    .catch(uploadError => {
+                        this.setState({uploadingProject: false});
+                        uploadError.json().then(_uploadError => {
+                            log.debug('after upload project: ', _uploadError);
+                        });
+                    });
+            });
+        };
+
         if (this.props.loggedIn) {
-            const projectId = this.fetchProjectId();
+            const projectId = window.location.hash.substring(1);
             this.setState({uploadingProject: true});
             if (projectId) {
                 // 直接上传
-                this.setState({projectId: projectId});
-                this.props.vm.saveProjectSb3().then(content => {
-                    log.debug('zip project ok.');
-                    projectService.uploadProject(projectId, content)
-                        .then(uploadResponse => {
-                            this.setState({uploadingProject: false});
-                            log.debug('after upload project: ', uploadResponse);
-                        })
-                        .catch(uploadError => {
-                            this.setState({uploadingProject: false});
-                            uploadError.json().then(_uploadError => {
-                                log.debug('after upload project: ', _uploadError);
-                            });
-                        });
-                });
+                uploadAction(projectId);
             } else {
                 // 先创建项目，然后上传
                 projectService.createProject()
@@ -102,21 +112,8 @@ class ProjectMenu extends React.Component {
                         const projectInfo = data.data;
                         log.debug('create new project: ', projectInfo);
                         log.debug('begin upload project: ', projectInfo);
-                        this.setState({projectId: projectInfo.no});
-                        this.props.vm.saveProjectSb3().then(content => {
-                            log.debug('zip project ok.');
-                            projectService.uploadProject(projectInfo.no, content)
-                                .then(uploadResponse => {
-                                    this.setState({uploadingProject: false});
-                                    log.debug('after upload project: ', uploadResponse);
-                                })
-                                .catch(uploadError => {
-                                    this.setState({uploadingProject: false});
-                                    uploadError.json().then(_uploadError => {
-                                        log.debug('after upload project: ', _uploadError);
-                                    });
-                                });
-                        });
+                        uploadAction(projectInfo.no);
+                        projectEvent.emit(EVENT_UPDATE_PROJECT_ID_ONLY, projectInfo.no, this.props.vm.toJSON());
                     })
                     .catch(e => {
                         e.json().then(response => {
@@ -130,6 +127,7 @@ class ProjectMenu extends React.Component {
         }
     }
 
+    // 导出项目
     handleExportClick () {
         // 导出项目到本地
         this.closeMenu();
@@ -153,17 +151,22 @@ class ProjectMenu extends React.Component {
         });
     }
 
+    // 获取项目列表
     handleFetchClick () {
         this.closeMenu();
+        // this.setState({openProjectList: true});
 
         projectService.fetchProjectList()
             .then(data => {
-                const projectList = data.data.items;
-                for (let i = 0; i < projectList.length; i++) {
-                    const project = projectList[i];
+                const projectListData = data.data.items;
+                for (let i = 0; i < projectListData.length; i++) {
+                    const project = projectListData[i];
                     log.debug('project = ', project);
                 }
-                this.renderProjectList(projectList);
+
+                // 打开项目列表
+                const projectList = this.renderProjectList(projectListData);
+                this.setState({projectList: projectList, openProjectList: true});
             })
             .catch(e => {
                 e.json().then(response => {
@@ -172,55 +175,45 @@ class ProjectMenu extends React.Component {
             });
     }
 
-    handleImportClick () {
-        // 从本地导入项目
-
-        this.closeMenu();
-
-        // 打开文件选择
-        this.fileInput.click();
+    handleCloseProjectList () {
+        this.setState({projectList: null, openProjectList: false});
     }
 
-    setFileInput (input) {
-        this.fileInput = input;
-    }
-
-    handleFileChange (e) {
-        // 打开项目文件
-        const reader = new FileReader();
-        // 通过vm加在项目文件
-        reader.onload = () => this.props.vm.loadProjectLocal(reader.result);
-        reader.readAsArrayBuffer(e.target.files[0]);
-    }
-
-    fetchProjectId () {
-        return window.location.hash.substring(1);
-    }
-
-    closeProjectList () {
-        this.setState({projectListItem: [], openProjectList: false});
-    }
-
-    renderProjectList (projectList) {
+    renderProjectList (projectListData) {
         const projectListItem = [];
-        projectList.map(project => (
+        projectListData.map(project => (
             projectListItem.push(
                 <ListItem key={project.no}>
                     <a
-                        href="javascript:void(0);"
-                        onClick={() => {
-                            console.log('------------ click');
-                            this.setState({projectListItem: [], openProjectList: false});
-                            location.replace(
-                                `${location.origin}#${project.no}.${project.version ? project.version : 1}`);
-                        }}
+                        href={`${location.origin}#${project.no}.${project.version ? project.version : 1}`}
                     >
                         {project.name}
                     </a>
                 </ListItem>
             )
         ));
-        this.setState({projectListItem: projectListItem, openProjectList: true});
+
+        return <List>{projectListItem}</List>;
+    }
+
+    // 导入项目
+    handleImportClick () {
+        this.closeMenu();
+
+        // 打开文件选择
+        this.fileInput.click();
+    }
+
+    setImportFile (input) {
+        this.fileInput = input;
+    }
+
+    handleImportFileChange (e) {
+        // 打开项目文件
+        const reader = new FileReader();
+        // 通过vm加在项目文件
+        reader.onload = () => this.props.vm.loadProjectLocal(reader.result);
+        reader.readAsArrayBuffer(e.target.files[0]);
     }
 
     render () {
@@ -229,7 +222,7 @@ class ProjectMenu extends React.Component {
             ...props
         } = this.props;
 
-        const {anchorEl, openMenu, openProjectList, projectListItem} = this.state;
+        const {anchorEl, openMenu, projectList, openProjectList} = this.state;
 
         return (
             <div className={props.className}>
@@ -247,21 +240,21 @@ class ProjectMenu extends React.Component {
                     onClose={this.handleClose}
                 >
                     <MenuItem onClick={this.handleNewClick}>New</MenuItem>
+                    <MenuItem onClick={this.handleSaveClick}>Save(Upload)</MenuItem>
                     <MenuItem onClick={this.handleFetchClick}>Fetch</MenuItem>
-                    <MenuItem onClick={this.handleUploadClick}>Upload</MenuItem>
-                    <MenuItem onClick={this.handleExportClick}>Export</MenuItem>
                     <MenuItem onClick={this.handleImportClick}>Import</MenuItem>
+                    <MenuItem onClick={this.handleExportClick}>Export</MenuItem>
                 </Menu>
                 <input
                     className={styles.fileInput}
-                    ref={this.setFileInput}
+                    ref={this.setImportFile}
                     type="file"
-                    onChange={this.handleFileChange}
+                    onChange={this.handleImportFileChange}
                 />
                 <ProjectListModal
                     isOpen={openProjectList}
-                    projectListItem={projectListItem}
-                    onRequestClose={this.closeProjectList}
+                    projectList={projectList}
+                    onRequestClose={this.handleCloseProjectList}
                 />
             </div>
         );

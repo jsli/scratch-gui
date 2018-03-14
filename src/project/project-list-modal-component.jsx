@@ -5,9 +5,7 @@ import ReactModal from 'react-modal';
 import Box from '../components/box/box.jsx';
 import styles from './project-list-modal-component.css';
 
-import List from 'material-ui/List';
-
-const ProjectListModal = props => (
+const ProjectListModalComponent = props => (
     <ReactModal
         className={styles.modalContent}
         isOpen={props.isOpen}
@@ -15,17 +13,15 @@ const ProjectListModal = props => (
         onRequestClose={props.onRequestClose}
     >
         <Box className={styles.body}>
-            <List>
-                {props.projectListItem}
-            </List>
+            {props.projectList}
         </Box>
     </ReactModal>
 );
 
-ProjectListModal.propTypes = {
+ProjectListModalComponent.propTypes = {
     isOpen: PropTypes.bool,
     onRequestClose: PropTypes.func.isRequired,
-    projectListItem: PropTypes.array
+    projectList: PropTypes.object
 };
 
-export default ProjectListModal;
+export default ProjectListModalComponent;
