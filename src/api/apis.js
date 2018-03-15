@@ -11,5 +11,8 @@ export default {
     register: getApi('/user/register'),
 
     // 项目相关
-    project: getApi('/project')
+    project: getApi('/project'),
+
+    // 项目相关
+    uploadToken: getApi('/qiniu/token')
 };

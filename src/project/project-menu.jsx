@@ -10,8 +10,9 @@ import {projectService} from './actions/project_service_async.js';
 import VM from 'scratch-vm';
 import ProjectListModal from './project-list-modal-component.jsx';
 import List, {ListItem} from 'material-ui/List';
+import projectUtils from './utils.js';
 
-import projectEvent, {EVENT_UPDATE_PROJECT_ID_ONLY} from './actions/project_event.js';
+// import projectEvent, {EVENT_UPDATE_PROJECT_ID_ONLY} from './actions/project_event.js';
 
 import styles from './project-menu.css';
 
@@ -44,7 +45,6 @@ class ProjectMenu extends React.Component {
         this.state = {
             anchorEl: null,
             openMenu: false,
-            projectId: window.location.hash.substring(1),
             uploadingProject: false,
             openProjectList: false,
             projectList: null
@@ -72,6 +72,7 @@ class ProjectMenu extends React.Component {
     // 新建项目
     handleNewClick () {
         this.closeMenu();
+
         // TODO: 暴力刷新，对话框提示
         location.replace(location.origin);
     }
@@ -80,15 +81,13 @@ class ProjectMenu extends React.Component {
     handleSaveClick () {
         this.closeMenu();
 
-        const uploadAction = projectId => {
-            this.setState({projectId: projectId});
-
+        const uploadAction = () => {
+            const projectInfo = projectUtils.parseProjectFromUrl();
             this.props.vm.saveProjectSb3().then(content => {
-                log.debug('zip project ok.');
-                projectService.uploadProject(projectId, content)
-                    .then(uploadResponse => {
+                projectService.preUploadProject(projectInfo.projectId, projectInfo.projectVersion, content)
+                    .then(() => {
                         this.setState({uploadingProject: false});
-                        log.debug('after upload project: ', uploadResponse);
+                        log.info(`${projectInfo}\nuploaded!`);
                     })
                     .catch(uploadError => {
                         this.setState({uploadingProject: false});
@@ -113,7 +112,7 @@ class ProjectMenu extends React.Component {
                         log.debug('create new project: ', projectInfo);
                         log.debug('begin upload project: ', projectInfo);
                         uploadAction(projectInfo.no);
-                        projectEvent.emit(EVENT_UPDATE_PROJECT_ID_ONLY, projectInfo.no, this.props.vm.toJSON());
+                        // projectEvent.emit(EVENT_UPDATE_PROJECT_ID_ONLY, projectInfo.no, this.props.vm.toJSON());
                     })
                     .catch(e => {
                         e.json().then(response => {
