@@ -81,13 +81,11 @@ class ProjectMenu extends React.Component {
     handleSaveClick () {
         this.closeMenu();
 
-        const uploadAction = () => {
-            const projectInfo = projectUtils.parseProjectFromUrl();
+        const _uploadAction = projectId => {
             this.props.vm.saveProjectSb3().then(content => {
-                projectService.preUploadProject(projectInfo.projectId, projectInfo.projectVersion, content)
+                projectService.uploadProject(projectId, content)
                     .then(() => {
                         this.setState({uploadingProject: false});
-                        log.info(`${projectInfo}\nuploaded!`);
                     })
                     .catch(uploadError => {
                         this.setState({uploadingProject: false});
@@ -99,19 +97,19 @@ class ProjectMenu extends React.Component {
         };
 
         if (this.props.loggedIn) {
-            const projectId = window.location.hash.substring(1);
+            const projectInfo = projectUtils.parseProjectFromUrl();
             this.setState({uploadingProject: true});
-            if (projectId) {
+            if (projectInfo.projectId) {
                 // 直接上传
-                uploadAction(projectId);
+                _uploadAction(projectInfo.projectId);
             } else {
                 // 先创建项目，然后上传
                 projectService.createProject()
                     .then(data => {
-                        const projectInfo = data.data;
-                        log.debug('create new project: ', projectInfo);
-                        log.debug('begin upload project: ', projectInfo);
-                        uploadAction(projectInfo.no);
+                        const _projectInfo = data.data;
+                        log.debug('create new project: ', _projectInfo);
+                        log.debug('begin upload project: ', _projectInfo);
+                        _uploadAction(_projectInfo.no);
                         // projectEvent.emit(EVENT_UPDATE_PROJECT_ID_ONLY, projectInfo.no, this.props.vm.toJSON());
                     })
                     .catch(e => {

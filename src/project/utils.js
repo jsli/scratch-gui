@@ -1,6 +1,11 @@
 const parseProjectFromUrl = () => {
     const project = window.location.hash.split('.');
-    if (project.length === 1) {
+    if (project.length === 0) {
+        return {
+            projectId: null,
+            projectVersion: 0
+        };
+    } else if (project.length === 1) {
         return {
             projectId: project[0],
             projectVersion: 1
