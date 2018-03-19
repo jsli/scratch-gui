@@ -1,5 +1,6 @@
 const parseProjectFromUrl = () => {
-    const project = window.location.hash.split('.');
+    // 去掉#
+    const project = window.location.hash.substring(1).split('.');
     if (project.length === 0) {
         return {
             projectId: null,

@@ -12,7 +12,7 @@ import ProjectListModal from './project-list-modal-component.jsx';
 import List, {ListItem} from 'material-ui/List';
 import projectUtils from './utils.js';
 
-// import projectEvent, {EVENT_UPDATE_PROJECT_ID_ONLY} from './actions/project_event.js';
+import projectEvent, {EVENT_UPDATE_PROJECT_ID_ONLY} from './actions/project_event.js';
 
 import styles from './project-menu.css';
 
@@ -45,7 +45,6 @@ class ProjectMenu extends React.Component {
         this.state = {
             anchorEl: null,
             openMenu: false,
-            uploadingProject: false,
             openProjectList: false,
             projectList: null
         };
@@ -72,25 +71,31 @@ class ProjectMenu extends React.Component {
     // 新建项目
     handleNewClick () {
         this.closeMenu();
-
-        // TODO: 暴力刷新，对话框提示
-        location.replace(location.origin);
+        const res = confirm('Please make sure that the project has been saved');
+        if (res) {
+            location.replace(location.origin);
+        }
     }
 
     // 保存项目
     handleSaveClick () {
         this.closeMenu();
 
-        const _uploadAction = projectId => {
+        const _uploadAction = projectInfo => {
             this.props.vm.saveProjectSb3().then(content => {
-                projectService.uploadProject(projectId, content)
+                projectService.uploadProject(projectInfo.no, content)
                     .then(() => {
-                        this.setState({uploadingProject: false});
+                        log.debug('after upload project: ', projectInfo.no);
+                        projectEvent.emit(
+                            EVENT_UPDATE_PROJECT_ID_ONLY,
+                            projectInfo.no,
+                            projectInfo.version === 0 ? 1 : projectInfo.version,
+                            this.props.vm.toJSON()
+                        );
                     })
                     .catch(uploadError => {
-                        this.setState({uploadingProject: false});
                         uploadError.json().then(_uploadError => {
-                            log.debug('after upload project: ', _uploadError);
+                            log.debug('upload project error: ', _uploadError);
                         });
                     });
             });
@@ -98,29 +103,34 @@ class ProjectMenu extends React.Component {
 
         if (this.props.loggedIn) {
             const projectInfo = projectUtils.parseProjectFromUrl();
-            this.setState({uploadingProject: true});
             if (projectInfo.projectId) {
+                log.debug('begin upload project: ', projectInfo);
                 // 直接上传
-                _uploadAction(projectInfo.projectId);
+                _uploadAction({
+                    no: projectInfo.projectId,
+                    version: projectInfo.projectVersion
+                });
             } else {
                 // 先创建项目，然后上传
-                projectService.createProject()
-                    .then(data => {
-                        const _projectInfo = data.data;
-                        log.debug('create new project: ', _projectInfo);
-                        log.debug('begin upload project: ', _projectInfo);
-                        _uploadAction(_projectInfo.no);
-                        // projectEvent.emit(EVENT_UPDATE_PROJECT_ID_ONLY, projectInfo.no, this.props.vm.toJSON());
-                    })
-                    .catch(e => {
-                        e.json().then(response => {
-                            log.error('create new project error: ', response);
+                const projectName = prompt('Please enter your project name', '');
+                if (projectName !== null && projectName !== '') {
+                    projectService.createProject({name: projectName})
+                        .then(data => {
+                            const _projectInfo = data.data;
+                            log.debug('create new project: ', _projectInfo);
+                            log.debug('begin upload project: ', _projectInfo);
+                            _uploadAction(_projectInfo);
+                        })
+                        .catch(e => {
+                            e.json().then(response => {
+                                log.error('create new project error: ', response);
+                            });
                         });
-                    });
+                }
             }
         } else {
-            // TODO: 提示请登录
-            log.error('Please login firstly!');
+            log.error('Please login');
+            alert('Please login');
         }
     }
 

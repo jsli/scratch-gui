@@ -34,7 +34,7 @@ class GUI extends React.Component {
         });
     }
     componentWillReceiveProps (nextProps) {
-        if (this.props.projectData !== nextProps.projectData) {
+        if (this.props.projectData !== nextProps.projectData && nextProps.shouldLoadProject) {
             this.setState({loading: true}, () => {
                 this.props.vm.loadProject(nextProps.projectData).then(() => {
                     this.setState({loading: false});
@@ -50,6 +50,7 @@ class GUI extends React.Component {
             children,
             fetchingProject,
             projectData, // eslint-disable-line no-unused-vars
+            shouldLoadProject, // eslint-disable-line no-unused-vars
             vm,
             ...componentProps
         } = this.props;
@@ -72,6 +73,7 @@ GUI.propTypes = {
     importInfoVisible: PropTypes.bool,
     previewInfoVisible: PropTypes.bool,
     projectData: PropTypes.string,
+    shouldLoadProject: PropTypes.bool,
     vm: PropTypes.instanceOf(VM)
 };
 

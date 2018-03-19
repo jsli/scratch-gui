@@ -5,24 +5,6 @@ import {authHeader} from '../../api/auth';
 import log from '../../lib/log.js';
 
 
-// 获取上传token
-const _getUploadToken = key => {
-    const auth = authHeader();
-    const requestOptions = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Basic ${auth}`
-        }
-    };
-
-    return fetch(`${api.uploadToken}?key=${key}`, requestOptions)
-        .then(checkResponse)
-        .then(successResponse)
-        .catch(catchResponse);
-};
-
-
 // 获取项目列表
 const fetchProjectList = () => {
     const auth = authHeader();

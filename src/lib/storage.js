@@ -18,7 +18,7 @@ class Storage extends ScratchStorage {
                 const [projectId, revision] = projectAsset.assetId.split('.');
                 return revision ?
                     `${PROJECT_SERVER}/${projectId}-${revision}.json` :
-                    `${PROJECT_SERVER}/${projectId}-1.json`;
+                    `${PROJECT_SERVER}/${projectId}.json`;
             }
         );
         this.addWebSource(

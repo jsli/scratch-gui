@@ -13,7 +13,7 @@ import projectEvent, {EVENT_UPDATE_PROJECT_ID_ONLY} from '../project/actions/pro
 
 /*
  * 扩展: 与project模块，通过event通信。
- * 当project模块新建项目后，通过event发来新的projectId和projectData，更新在url中，并通过isUpdateProjectIdOnly,
+ * 当project模块新建项目后，通过event发来新的projectId和projectData，更新在url中，并通过shouldLoadProject为false,
  * 标识不需要重新load项目
  */
 const ProjectLoaderHOC = function (WrappedComponent) {
@@ -24,9 +24,10 @@ const ProjectLoaderHOC = function (WrappedComponent) {
             this.updateProject = this.updateProject.bind(this);
             this.updateProjectIdOnly = this.updateProjectIdOnly.bind(this);
             this.state = {
-                isUpdateProjectIdOnly: false,
+                shouldLoadProject: true,
                 projectId: null,
                 projectData: null,
+                projectVersion: null,
                 fetchingProject: false
             };
         }
@@ -36,7 +37,7 @@ const ProjectLoaderHOC = function (WrappedComponent) {
             this.updateProject();
         }
         componentWillUpdate (nextProps, nextState) {
-            if (this.state.projectId !== nextState.projectId && !nextState.isUpdateProjectIdOnly) {
+            if (this.state.projectId !== nextState.projectId && nextState.shouldLoadProject) {
                 this.setState({fetchingProject: true}, () => {
                     storage
                         .load(storage.AssetType.Project, this.state.projectId, storage.DataFormat.JSON)
@@ -57,7 +58,7 @@ const ProjectLoaderHOC = function (WrappedComponent) {
         }
         updateProject () {
             let projectId = this.fetchProjectId();
-            if (projectId !== this.state.projectId) {
+            if (projectId !== this.state.projectId && this.state.shouldLoadProject) {
                 if (projectId.length < 1) projectId = 0;
                 this.setState({projectId: projectId});
 
@@ -71,11 +72,14 @@ const ProjectLoaderHOC = function (WrappedComponent) {
                 }
             }
         }
-        updateProjectIdOnly (projectId, projectData) {
-            this.setState({projectId: projectId, projectData: projectData, isUpdateProjectIdOnly: true}, () => {
-                window.location.href = `${window.location.origin}/#${projectId}`;
-                this.setState({isUpdateProjectIdOnly: false});
-            });
+        updateProjectIdOnly (projectId, projectVersion, projectData) {
+            this.setState({projectId: projectId, projectData: projectData, projectVersion: projectVersion, shouldLoadProject: false},
+                () => {
+                    // TODO: 暂时不支持version
+                    window.location.href = `${window.location.origin}/#${projectId}`;
+                    this.setState({shouldLoadProject: true});
+                }
+            );
         }
         render () {
             if (!this.state.projectData) return null;
@@ -83,6 +87,7 @@ const ProjectLoaderHOC = function (WrappedComponent) {
                 <WrappedComponent
                     fetchingProject={this.state.fetchingProject}
                     projectData={this.state.projectData}
+                    shouldLoadProject={this.state.shouldLoadProject}
                     {...this.props}
                 />
             );
