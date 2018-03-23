@@ -10,18 +10,13 @@
     "electron-start": "electron . --debug --enable-logging",
     "i18n:src": "babel src > tmp.js && rimraf tmp.js && build-i18n-src ./translations/messages/ ./translations/",
     "pack-osx": "./node_modules/.bin/electron-packager . --out electron-build --ignore node_modules --platform=darwin --arch=x64 --overwrite",
-    "pack-win": "build",
+    "pack-win": "./node_modules/.bin/electron-packager . --out electron-build --ignore node_modules --platform=win32 --arch=x64 --overwrite",
     "start": "webpack-dev-server",
     "test": "npm run test:lint && npm run test:unit && NODE_ENV=production npm run build && npm run test:integration",
     "test:integration": "jest --runInBand test[\\\\/]integration",
     "test:lint": "eslint . --ext .js,.jsx",
     "test:unit": "jest test[\\\\/]unit",
     "watch": "webpack --progress --colors --watch"
-  },
-  "build": {
-    "win": {
-        "target": ["nsis", "zip"]
-    }
   },
   "author": "Massachusetts Institute of Technology",
   "license": "BSD-3-Clause",
