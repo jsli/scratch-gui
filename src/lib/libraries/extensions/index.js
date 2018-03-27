@@ -21,6 +21,14 @@ export default [
         featured: true
     },
     {
+        name: 'Espduino',
+        extensionURL: 'http://localhost:8000/index.js',
+        iconURL: wedoImage,
+        description: 'Build with esp8266 and arduino.',
+        featured: true,
+        disabled: false
+    },
+    {
         name: 'LEGO WeDo 2.0',
         extensionURL: '',
         iconURL: wedoImage,
