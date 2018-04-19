@@ -34,7 +34,7 @@
 }
 
 .body {
-    background: $ui-pane-gray;
+    background: $ui-white;
     padding: 1.5rem 2.25rem;
     text-align: center;
 }

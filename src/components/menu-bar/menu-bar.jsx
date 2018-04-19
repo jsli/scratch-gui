@@ -6,8 +6,8 @@ import React from 'react';
 
 import Box from '../box/box.jsx';
 import Button from '../button/button.jsx';
-import LoadButton from '../../containers/load-button.jsx';
-import SaveButton from '../../containers/save-button.jsx';
+// import LoadButton from '../../containers/load-button.jsx';
+// import SaveButton from '../../containers/save-button.jsx';
 import ProjectMenu from '../../project/project-menu.jsx';
 // import RecordMenu from '../../sharing/record-menu.jsx';
 import {ComingSoonTooltip} from '../coming-soon/coming-soon.jsx';
@@ -223,8 +223,8 @@ const MenuBar = props => (
                     </Button>
                 </MenuBarItemTooltip>
             </div>
-            <SaveButton className={classNames(styles.hide, styles.menuItem)} />
-            <LoadButton className={classNames(styles.hide, styles.menuItem)} />
+            {/*<SaveButton className={classNames(styles.hide, styles.menuItem)} />*/}
+            {/*<LoadButton className={classNames(styles.hide, styles.menuItem)} />*/}
             <LanguageSelector className={classNames(styles.hide, styles.menuItem)} />
             <ProjectMenu className={styles.menuItem} />
             {/*<RecordMenu className={styles.menuItem} />*/}
@@ -255,6 +255,7 @@ const MenuBar = props => (
                         id="gui.menuBar.logout"
                     />
                 </span>
+            </Button>
         </div>
         <div className={styles.accountInfoWrapper}>
             <MenuBarItemTooltip id="mystuff">
@@ -331,7 +332,7 @@ const mapDispatchToProps = dispatch => ({
     onRequestCloseFile: () => dispatch(closeFileMenu()),
     onClickEdit: () => dispatch(openEditMenu()),
     onRequestCloseEdit: () => dispatch(closeEditMenu())
-};
+});
 
 export default connect(
     mapStateToProps,

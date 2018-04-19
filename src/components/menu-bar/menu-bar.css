@@ -56,14 +56,13 @@
     top: $menu-bar-height;
 }
 
-<<<<<<< HEAD
 .menu-item {
     display: block;
-    line-height: $menu-bar-height;
-=======
+    line-height: $ menu-bar-height;
+}
+
 .menu-bar-item {
     display: flex;
->>>>>>> llk/develop
     padding: 0 0.25rem;
     text-decoration: none;
     color: $ui-white;
